@@ -13,7 +13,7 @@ function App({ checkBackendStatus }) {
   async function handleFetchDevices() {
     try {
       const response = await fetch(
-        "homepal-webapp-backend.vercel.app/devices",
+        "https://homepal-webapp-backend.vercel.app/devices",
         {
           headers: {
             "Content-Type": "application/json",
