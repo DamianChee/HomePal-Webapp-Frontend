@@ -55,7 +55,7 @@ function App({ checkBackendStatus }) {
   }
 
   useEffect(() => {
-    fetchData();
+    handleFetchStatus();
   }, [checkBackendStatus]);
 
   return (
