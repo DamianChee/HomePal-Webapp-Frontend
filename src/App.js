@@ -9,6 +9,8 @@ function App({ checkBackendStatus }) {
     timestamp: formatDate(),
   });
 
+  const [devices, setDevices] = useState([]);
+
   // Handle Fetch Devices onClick
   async function handleFetchDevices() {
     try {
@@ -32,7 +34,7 @@ function App({ checkBackendStatus }) {
 
       const data = await response.json();
       console.log("[App.js Response ok] Devices:", data);
-      return data;
+      setDevices(JSON.stringify(data));
     } catch (error) {
       console.error(
         "[App.js error caught] Failed to check backend status: ",
@@ -76,7 +78,9 @@ function App({ checkBackendStatus }) {
         </a>
         <div>{`Status: ${message.status}`}</div>
         <div>{`timestamp: ${message.timestamp}`}</div>
+        <button onClick={checkBackendStatus}>Is Firebase Connected?</button>
         <button onClick={handleFetchDevices}>Fetch Devices!</button>
+        <div>{devices ? devices : ""}</div>
       </header>
     </div>
   );
