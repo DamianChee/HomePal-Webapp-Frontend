@@ -46,17 +46,39 @@ function App({ checkBackendStatus }) {
 
   async function handleFetchStatus() {
     try {
-      const result = await checkBackendStatus;
+      const response = await fetch(
+        "https://homepal-webapp-backend.vercel.app/api/status",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      setMessage(result);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error(
+          "[index.js Response not ok] Backend status check failed: ",
+          text
+        );
+        return "[index.js] Backend status check failed:";
+      }
+
+      const data = await response.json();
+      console.log("[index.js Response ok] Backend status:", data);
+      setMessage(data);
     } catch (error) {
-      console.error("[App.js] Failed to check backend status: ", error.message);
+      console.error(
+        "[index.js error caught] Failed to check backend status: ",
+        error.message
+      );
+      return `[index.js] Failed to check backend status: ${error.message}`;
     }
   }
 
   useEffect(() => {
     handleFetchStatus();
-  }, [checkBackendStatus]);
+  });
 
   return (
     <div className="App">
