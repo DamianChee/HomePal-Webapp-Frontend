@@ -76,7 +76,7 @@ function App({ checkBackendStatus }) {
         </a>
         <div>{`Status: ${message.status}`}</div>
         <div>{`timestamp: ${message.timestamp}`}</div>
-        <Button onClick={handleFetchDevices}>Fetch Devices!</Button>
+        <button onClick={handleFetchDevices}>Fetch Devices!</button>
       </header>
     </div>
   );
