@@ -44,20 +44,17 @@ function App({ checkBackendStatus }) {
     }
   }
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const result = await checkBackendStatus;
+  async function handleFetchStatus() {
+    try {
+      const result = await checkBackendStatus;
 
-        setMessage(result);
-      } catch (error) {
-        console.error(
-          "[App.js] Failed to check backend status: ",
-          error.message
-        );
-      }
+      setMessage(result);
+    } catch (error) {
+      console.error("[App.js] Failed to check backend status: ", error.message);
     }
+  }
 
+  useEffect(() => {
     fetchData();
   }, [checkBackendStatus]);
 
@@ -78,7 +75,7 @@ function App({ checkBackendStatus }) {
         </a>
         <div>{`Status: ${message.status}`}</div>
         <div>{`timestamp: ${message.timestamp}`}</div>
-        <button onClick={checkBackendStatus}>Is Firebase Connected?</button>
+        <button onClick={handleFetchStatus}>Is Firebase Connected?</button>
         <button onClick={handleFetchDevices}>Fetch Devices!</button>
         <div>{devices ? devices : ""}</div>
       </header>
