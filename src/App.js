@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import formatDate from "./utils/dateFormatter";
 
-function App({ checkBackendStatus }) {
+function App() {
   const [message, setMessage] = useState({
     status: "There is no message yet.",
     timestamp: formatDate(),
@@ -78,7 +78,7 @@ function App({ checkBackendStatus }) {
 
   useEffect(() => {
     handleFetchStatus();
-  });
+  }, []);
 
   return (
     <div className="App">
