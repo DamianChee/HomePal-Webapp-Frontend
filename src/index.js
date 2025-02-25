@@ -19,7 +19,7 @@ auth.onAuthStateChanged((user) => {
 async function checkBackendStatus() {
   try {
     const response = await fetch(
-      "https://homepal-test-backend.vercel.app/api/status",
+      "homepal-webapp-backend.vercel.app/api/status",
       {
         headers: {
           "Content-Type": "application/json",
