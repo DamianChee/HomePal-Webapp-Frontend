@@ -41,15 +41,25 @@ function MobileMonitorDashboard() {
   // Filter state
   const [activeFilters, setActiveFilters] = useState(['all']);
   
-  // Mock event data
+  // Pagination state for Recent Activity
+  const [eventsToShow, setEventsToShow] = useState(3);
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 5;
+  
+  // History view state
+  const [historyDateFilter, setHistoryDateFilter] = useState('Today');
+  
+  // Mock event data with 34 events in total (4 original + 30 new)
   const events = [
+    // Today's events (10 events)
     {
       id: 1,
       time: '02:15 AM',
       date: 'Today',
       event: 'Left bed',
       status: 'critical',
-      description: 'Movement detected away from bed'
+      description: 'Movement detected away from bed',
+      timestamp: new Date(new Date().setHours(2, 15, 0, 0)).getTime()
     },
     {
       id: 2,
@@ -57,15 +67,91 @@ function MobileMonitorDashboard() {
       date: 'Today',
       event: 'Edge movement',
       status: 'warning',
-      description: 'Activity near bed edge'
+      description: 'Activity near bed edge',
+      timestamp: new Date(new Date().setHours(1, 45, 0, 0)).getTime()
     },
+    {
+      id: 5,
+      time: '01:10 AM',
+      date: 'Today',
+      event: 'Restless sleep',
+      status: 'normal',
+      description: 'Increased movement frequency detected',
+      timestamp: new Date(new Date().setHours(1, 10, 0, 0)).getTime()
+    },
+    {
+      id: 6,
+      time: '12:32 AM',
+      date: 'Today',
+      event: 'Sleep sounds',
+      status: 'normal',
+      description: 'Light snoring detected',
+      timestamp: new Date(new Date().setHours(0, 32, 0, 0)).getTime()
+    },
+    {
+      id: 7,
+      time: '12:05 AM',
+      date: 'Today',
+      event: 'Edge movement',
+      status: 'warning',
+      description: 'Brief movement near edge of bed',
+      timestamp: new Date(new Date().setHours(0, 5, 0, 0)).getTime()
+    },
+    {
+      id: 8,
+      time: '11:50 PM',
+      date: 'Today',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(23, 50, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 9,
+      time: '11:48 PM',
+      date: 'Today',
+      event: 'Room entry',
+      status: 'normal',
+      description: 'Movement detected in room',
+      timestamp: new Date(new Date().setHours(23, 48, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 10,
+      time: '11:45 PM',
+      date: 'Today',
+      event: 'Lights dimmed',
+      status: 'normal',
+      description: 'Room lighting level reduced',
+      timestamp: new Date(new Date().setHours(23, 45, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 11,
+      time: '11:40 PM',
+      date: 'Today',
+      event: 'Bathroom visit',
+      status: 'normal',
+      description: 'Movement to bathroom detected',
+      timestamp: new Date(new Date().setHours(23, 40, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 12,
+      time: '10:55 PM',
+      date: 'Today',
+      event: 'Room temperature',
+      status: 'normal',
+      description: 'Room temperature set to 68°F',
+      timestamp: new Date(new Date().setHours(22, 55, 0, 0)).getTime() - 86400000
+    },
+    
+    // Yesterday's events (10 events)
     {
       id: 3,
       time: '11:30 PM',
       date: 'Yesterday',
       event: 'Bed exit',
       status: 'critical',
-      description: 'Complete exit from bed detected'
+      description: 'Complete exit from bed detected',
+      timestamp: new Date(new Date().setHours(23, 30, 0, 0)).getTime() - 86400000
     },
     {
       id: 4,
@@ -73,7 +159,208 @@ function MobileMonitorDashboard() {
       date: 'Yesterday',
       event: 'Edge detection',
       status: 'warning',
-      description: 'Sitting on edge of bed'
+      description: 'Sitting on edge of bed',
+      timestamp: new Date(new Date().setHours(22, 15, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 13,
+      time: '09:45 PM',
+      date: 'Yesterday',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(21, 45, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 14,
+      time: '09:15 PM',
+      date: 'Yesterday',
+      event: 'Room entry',
+      status: 'normal',
+      description: 'Movement detected in room',
+      timestamp: new Date(new Date().setHours(21, 15, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 15,
+      time: '02:30 PM',
+      date: 'Yesterday',
+      event: 'Medication check',
+      status: 'normal',
+      description: 'Medication reminder acknowledged',
+      timestamp: new Date(new Date().setHours(14, 30, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 16,
+      time: '08:45 AM',
+      date: 'Yesterday',
+      event: 'Bed exit',
+      status: 'normal',
+      description: 'Morning wake-up detected',
+      timestamp: new Date(new Date().setHours(8, 45, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 17,
+      time: '07:15 AM',
+      date: 'Yesterday',
+      event: 'Restless sleep',
+      status: 'warning',
+      description: 'Increased movement during sleep',
+      timestamp: new Date(new Date().setHours(7, 15, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 18,
+      time: '05:30 AM',
+      date: 'Yesterday',
+      event: 'Bed exit',
+      status: 'critical',
+      description: 'Early morning bathroom visit',
+      timestamp: new Date(new Date().setHours(5, 30, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 19,
+      time: '04:10 AM',
+      date: 'Yesterday',
+      event: 'Sleep sounds',
+      status: 'warning',
+      description: 'Heavy breathing detected',
+      timestamp: new Date(new Date().setHours(4, 10, 0, 0)).getTime() - 86400000
+    },
+    {
+      id: 20,
+      time: '01:45 AM',
+      date: 'Yesterday',
+      event: 'Temperature alert',
+      status: 'warning',
+      description: 'Room temperature increased to 74°F',
+      timestamp: new Date(new Date().setHours(1, 45, 0, 0)).getTime() - 86400000
+    },
+    
+    // Past Week events (14 events)
+    {
+      id: 21,
+      time: '11:30 PM',
+      date: 'Past Week',
+      event: 'Deep sleep detected',
+      status: 'normal',
+      description: 'Minimal movement period',
+      timestamp: new Date(new Date().setHours(23, 30, 0, 0)).getTime() - 3 * 86400000
+    },
+    {
+      id: 22,
+      time: '10:45 PM',
+      date: 'Past Week',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(22, 45, 0, 0)).getTime() - 3 * 86400000
+    },
+    {
+      id: 23,
+      time: '02:15 AM',
+      date: 'Past Week',
+      event: 'Bed exit',
+      status: 'critical',
+      description: 'Complete exit from bed detected',
+      timestamp: new Date(new Date().setHours(2, 15, 0, 0)).getTime() - 4 * 86400000
+    },
+    {
+      id: 24,
+      time: '01:30 AM',
+      date: 'Past Week',
+      event: 'Edge movement',
+      status: 'warning',
+      description: 'Activity near bed edge',
+      timestamp: new Date(new Date().setHours(1, 30, 0, 0)).getTime() - 4 * 86400000
+    },
+    {
+      id: 25,
+      time: '11:45 PM',
+      date: 'Past Week',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(23, 45, 0, 0)).getTime() - 4 * 86400000
+    },
+    {
+      id: 26,
+      time: '10:30 PM',
+      date: 'Past Week',
+      event: 'Room temperature',
+      status: 'normal',
+      description: 'Room temperature set to 68°F',
+      timestamp: new Date(new Date().setHours(22, 30, 0, 0)).getTime() - 5 * 86400000
+    },
+    {
+      id: 27,
+      time: '03:15 AM',
+      date: 'Past Week',
+      event: 'Bed exit',
+      status: 'critical',
+      description: 'Complete exit from bed detected',
+      timestamp: new Date(new Date().setHours(3, 15, 0, 0)).getTime() - 6 * 86400000
+    },
+    {
+      id: 28,
+      time: '02:45 AM',
+      date: 'Past Week',
+      event: 'Edge movement',
+      status: 'warning',
+      description: 'Activity near bed edge',
+      timestamp: new Date(new Date().setHours(2, 45, 0, 0)).getTime() - 6 * 86400000
+    },
+    {
+      id: 29,
+      time: '12:15 AM',
+      date: 'Past Week',
+      event: 'Deep sleep detected',
+      status: 'normal',
+      description: 'Minimal movement period',
+      timestamp: new Date(new Date().setHours(0, 15, 0, 0)).getTime() - 6 * 86400000
+    },
+    {
+      id: 30,
+      time: '11:00 PM',
+      date: 'Past Week',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(23, 0, 0, 0)).getTime() - 7 * 86400000
+    },
+    {
+      id: 31,
+      time: '04:30 AM',
+      date: 'Past Week',
+      event: 'Bed exit',
+      status: 'critical',
+      description: 'Complete exit from bed detected',
+      timestamp: new Date(new Date().setHours(4, 30, 0, 0)).getTime() - 7 * 86400000
+    },
+    {
+      id: 32,
+      time: '03:15 AM',
+      date: 'Past Week',
+      event: 'Restless sleep',
+      status: 'warning',
+      description: 'Increased movement during sleep',
+      timestamp: new Date(new Date().setHours(3, 15, 0, 0)).getTime() - 7 * 86400000
+    },
+    {
+      id: 33,
+      time: '01:45 AM',
+      date: 'Past Week',
+      event: 'Sleep sounds',
+      status: 'normal',
+      description: 'Light snoring detected',
+      timestamp: new Date(new Date().setHours(1, 45, 0, 0)).getTime() - 7 * 86400000
+    },
+    {
+      id: 34,
+      time: '11:30 PM',
+      date: 'Past Week',
+      event: 'Entered bed',
+      status: 'normal',
+      description: 'Person detected in bed',
+      timestamp: new Date(new Date().setHours(23, 30, 0, 0)).getTime() - 8 * 86400000
     }
   ];
   
@@ -355,7 +642,12 @@ function MobileMonitorDashboard() {
             <div className="flex">
               <button 
                 className="p-1.5 text-white bg-gray-700 hover:bg-gray-600 transition-colors rounded-lg flex items-center space-x-1"
-                onClick={() => setShowHistory(true)}
+                onClick={() => {
+                  setShowHistory(true);
+                  // Reset filters and pagination when opening history
+                  setHistoryDateFilter('Today');
+                  setCurrentPage(1);
+                }}
                 aria-label="View history"
               >
                 <Calendar className="h-4 w-4" />
@@ -374,22 +666,42 @@ function MobileMonitorDashboard() {
 
           <div className="divide-y divide-gray-700">
             {/* Group events by date */}
-            {['Today', 'Yesterday'].map(date => (
-              <div key={date}>
-                <div className="px-3 py-2 bg-gray-750 text-xs text-gray-400 font-medium">
-                  {date}
-                </div>
-                {events
-                  .filter(event => event.date === date)
-                  // Apply status filters
-                  .filter(event => {
-                    if (activeFilters.includes('all')) return true;
-                    if (event.status === 'critical' && activeFilters.includes('critical')) return true;
-                    if (event.status === 'warning' && activeFilters.includes('warning')) return true;
-                    if (event.status === 'normal' && activeFilters.includes('normal')) return true;
-                    return false;
-                  })
-                  .map((event) => (
+            {['Today', 'Yesterday'].map(date => {
+              // Get filtered events for this date
+              const filteredEvents = events
+                .filter(event => event.date === date)
+                // Apply status filters
+                .filter(event => {
+                  if (activeFilters.includes('all')) return true;
+                  if (event.status === 'critical' && activeFilters.includes('critical')) return true;
+                  if (event.status === 'warning' && activeFilters.includes('warning')) return true;
+                  if (event.status === 'normal' && activeFilters.includes('normal')) return true;
+                  return false;
+                })
+                // Sort by timestamp (most recent first)
+                .sort((a, b) => b.timestamp - a.timestamp);
+              
+              // Calculate pagination for this date group
+              const startIndex = (currentPage - 1) * eventsPerPage;
+              const endIndex = Math.min(
+                startIndex + eventsPerPage,
+                filteredEvents.length
+              );
+              
+              // Only show events up to the eventsToShow limit for this date
+              const visibleEvents = filteredEvents.slice(0, eventsToShow);
+              
+              // Only render this date group if it has events to show
+              if (filteredEvents.length === 0) return null;
+              
+              return (
+                <div key={date}>
+                  <div className="px-3 py-2 bg-gray-750 text-xs text-gray-400 font-medium">
+                    {date}
+                  </div>
+                  
+                  {/* Render visible events */}
+                  {visibleEvents.map((event) => (
                     <button
                       key={event.id}
                       className={`w-full text-left flex items-start space-x-2 p-3 hover:bg-gray-700 active:bg-gray-600 transition-colors
@@ -408,8 +720,67 @@ function MobileMonitorDashboard() {
                       <div className="flex-shrink-0 text-xs bg-gray-600 px-1.5 py-0.5 rounded text-white ml-1">View</div>
                     </button>
                   ))}
-              </div>
-            ))}
+                  
+                  {/* Show More button - only show if there are more events to display */}
+                  {filteredEvents.length > visibleEvents.length && (
+                    <div className="px-3 py-2 border-t border-gray-700">
+                      <button 
+                        className="w-full text-center text-blue-400 text-sm hover:text-blue-300 transition-colors"
+                        onClick={() => {
+                          if (eventsToShow < eventsPerPage) {
+                            // First expand to 5
+                            setEventsToShow(eventsPerPage);
+                          } else {
+                            // Then enable pagination
+                            if (currentPage * eventsPerPage < filteredEvents.length) {
+                              setCurrentPage(currentPage + 1);
+                            }
+                          }
+                          console.log(`Showing more events for ${date}. Current page: ${currentPage}, Events to show: ${eventsToShow}`);
+                        }}
+                      >
+                        Show More
+                      </button>
+                    </div>
+                  )}
+                  
+                  {/* Pagination controls - only show if we've expanded beyond initial view */}
+                  {eventsToShow >= eventsPerPage && filteredEvents.length > eventsPerPage && (
+                    <div className="px-3 py-2 border-t border-gray-700 flex justify-between items-center">
+                      <button 
+                        className={`text-sm ${currentPage > 1 ? 'text-blue-400 hover:text-blue-300' : 'text-gray-600'} transition-colors`}
+                        onClick={() => {
+                          if (currentPage > 1) {
+                            setCurrentPage(currentPage - 1);
+                            console.log(`Moving to previous page. Current page: ${currentPage - 1}`);
+                          }
+                        }}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                      
+                      <span className="text-xs text-gray-400">
+                        Page {currentPage} of {Math.ceil(filteredEvents.length / eventsPerPage)}
+                      </span>
+                      
+                      <button 
+                        className={`text-sm ${currentPage < Math.ceil(filteredEvents.length / eventsPerPage) ? 'text-blue-400 hover:text-blue-300' : 'text-gray-600'} transition-colors`}
+                        onClick={() => {
+                          if (currentPage < Math.ceil(filteredEvents.length / eventsPerPage)) {
+                            setCurrentPage(currentPage + 1);
+                            console.log(`Moving to next page. Current page: ${currentPage + 1}`);
+                          }
+                        }}
+                        disabled={currentPage >= Math.ceil(filteredEvents.length / eventsPerPage)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -432,13 +803,37 @@ function MobileMonitorDashboard() {
             {/* Date Filter Tabs */}
             <div className="bg-gray-800 px-4 py-2 border-b border-gray-700">
               <div className="flex space-x-2">
-                <button className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-full">
+                <button 
+                  className={`px-3 py-1 ${historyDateFilter === 'Today' ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'} text-sm rounded-full`}
+                  onClick={() => {
+                    setHistoryDateFilter('Today');
+                    // Reset pagination when changing filters
+                    setCurrentPage(1);
+                    console.log('History filter set to: Today');
+                  }}
+                >
                   Today
                 </button>
-                <button className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full">
+                <button 
+                  className={`px-3 py-1 ${historyDateFilter === 'Past Week' ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'} text-sm rounded-full`}
+                  onClick={() => {
+                    setHistoryDateFilter('Past Week');
+                    // Reset pagination when changing filters
+                    setCurrentPage(1);
+                    console.log('History filter set to: Past Week');
+                  }}
+                >
                   Past Week
                 </button>
-                <button className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full">
+                <button 
+                  className={`px-3 py-1 ${historyDateFilter === 'All History' ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'} text-sm rounded-full`}
+                  onClick={() => {
+                    setHistoryDateFilter('All History');
+                    // Reset pagination when changing filters
+                    setCurrentPage(1);
+                    console.log('History filter set to: All History');
+                  }}
+                >
                   All History
                 </button>
               </div>
@@ -446,76 +841,101 @@ function MobileMonitorDashboard() {
             
             {/* Events List */}
             <div className="flex-1 overflow-auto">
-              {/* February 24, 2025 */}
-              <div className="px-4 py-2 bg-gray-800 text-sm text-white font-semibold sticky top-0 border-b border-gray-700">
-                February 24, 2025
-              </div>
-              {events
-                .filter(event => event.date === 'Today')
-                .filter(event => {
-                  if (activeFilters.includes('all')) return true;
-                  if (event.status === 'critical' && activeFilters.includes('critical')) return true;
-                  if (event.status === 'warning' && activeFilters.includes('warning')) return true;
-                  return false;
-                })
-                .map((event) => (
-                  <button
-                    key={event.id}
-                    className="w-full text-left flex items-start space-x-2 p-3 hover:bg-gray-800 border-b border-gray-700"
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setShowHistory(false);
-                      
-                      // Log to console
-                      console.log('Selected event:', event);
-                    }}
-                  >
-                    <div className={`mt-0.5 h-3 w-3 rounded-full flex-shrink-0 ${getStatusColor(event.status)}`} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <div className="text-white text-sm font-medium">{event.event}</div>
-                        <div className="text-xs text-gray-400">{event.time}</div>
-                      </div>
-                      <div className="text-xs text-gray-400 mt-0.5">{event.description}</div>
-                    </div>
-                  </button>
-                ))}
-              
-              {/* February 23, 2025 */}
-              <div className="px-4 py-2 bg-gray-800 text-sm text-white font-semibold sticky top-0 border-b border-gray-700">
-                February 23, 2025
-              </div>
-              {events
-                .filter(event => event.date === 'Yesterday')
-                .filter(event => {
-                  if (activeFilters.includes('all')) return true;
-                  if (event.status === 'critical' && activeFilters.includes('critical')) return true;
-                  if (event.status === 'warning' && activeFilters.includes('warning')) return true;
-                  return false;
-                })
-                .map((event) => (
-                  <button
-                    key={event.id}
-                    className="w-full text-left flex items-start space-x-2 p-3 hover:bg-gray-800 border-b border-gray-700"
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setShowHistory(false);
-                      
-                      // Log to console
-                      console.log('Selected event:', event);
-                    }}
-                  >
-                    <div className={`mt-0.5 h-3 w-3 rounded-full flex-shrink-0 ${getStatusColor(event.status)}`} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <div className="text-white text-sm font-medium">{event.event}</div>
-                        <div className="text-xs text-gray-400">{event.time}</div>
-                      </div>
-                      <div className="text-xs text-gray-400 mt-0.5">{event.description}</div>
-                    </div>
-                  </button>
-                ))}
+              {/* Get filtered events based on historyDateFilter */}
+              {(() => {
+                // Helper function to get events by date filter
+                const getFilteredEvents = () => {
+                  let filteredEvents = [];
+                  
+                  if (historyDateFilter === 'Today') {
+                    filteredEvents = events.filter(event => event.date === 'Today');
+                  } else if (historyDateFilter === 'Past Week') {
+                    filteredEvents = events.filter(event => 
+                      event.date === 'Today' || event.date === 'Yesterday' || event.date === 'Past Week'
+                    );
+                  } else if (historyDateFilter === 'All History') {
+                    filteredEvents = events; // All events
+                  }
+                  
+                  // Apply status filters
+                  return filteredEvents.filter(event => {
+                    if (activeFilters.includes('all')) return true;
+                    if (event.status === 'critical' && activeFilters.includes('critical')) return true;
+                    if (event.status === 'warning' && activeFilters.includes('warning')) return true;
+                    if (event.status === 'normal' && activeFilters.includes('normal')) return true;
+                    return false;
+                  }).sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp (newest first)
+                };
                 
+                const filteredEvents = getFilteredEvents();
+                
+                // Group events by date for display
+                const groupedEvents = {};
+                
+                // Process event dates for display
+                filteredEvents.forEach(event => {
+                  let displayDate;
+                  
+                  if (event.date === 'Today') {
+                    displayDate = 'February 24, 2025'; // Example date, could be dynamic
+                  } else if (event.date === 'Yesterday') {
+                    displayDate = 'February 23, 2025';
+                  } else {
+                    // For 'Past Week' items, create dates based on timestamp
+                    const eventDate = new Date(event.timestamp);
+                    displayDate = eventDate.toLocaleDateString('en-US', { 
+                      month: 'long', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    });
+                  }
+                  
+                  if (!groupedEvents[displayDate]) {
+                    groupedEvents[displayDate] = [];
+                  }
+                  
+                  groupedEvents[displayDate].push(event);
+                });
+                
+                // If no events to display
+                if (Object.keys(groupedEvents).length === 0) {
+                  return (
+                    <div className="p-8 text-center text-gray-400">
+                      No events found for the selected filter.
+                    </div>
+                  );
+                }
+                
+                // Render grouped events by date
+                return Object.entries(groupedEvents).map(([date, dateEvents]) => (
+                  <div key={date}>
+                    <div className="px-4 py-2 bg-gray-800 text-sm text-white font-semibold sticky top-0 border-b border-gray-700">
+                      {date}
+                    </div>
+                    {dateEvents.map((event) => (
+                      <button
+                        key={event.id}
+                        className="w-full text-left flex items-start space-x-2 p-3 hover:bg-gray-800 border-b border-gray-700"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setShowHistory(false);
+                          console.log('Selected event:', event);
+                        }}
+                      >
+                        <div className={`mt-0.5 h-3 w-3 rounded-full flex-shrink-0 ${getStatusColor(event.status)}`} />
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <div className="text-white text-sm font-medium">{event.event}</div>
+                            <div className="text-xs text-gray-400">{event.time}</div>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-0.5">{event.description}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ));
+              })()}
+              
               {/* Data Retention Notice */}
               <div className="p-4 text-center text-xs text-gray-500">
                 Event data is retained for 30 days.<br/>
