@@ -8,24 +8,29 @@ import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
  * App Component
  * 
  * Main application component that serves as the entry point.
- * In this updated version, we've integrated the CarePal Mobile Dashboard while
- * keeping the original app's functionality.
+ * Now using CarePal Mobile Dashboard as the default view.
+ * The original app functionality is kept but commented out.
  * 
  * The App includes:
- * 1. A toggle to switch between original view and CarePal dashboard
- * 2. Maintains the original Firebase connectivity features
+ * 1. CarePal dashboard as the main view
+ * 2. Firebase connectivity available in the background
  * 3. Uses modern React practices (hooks, functional components)
  */
 function App() {
+  // Original app state maintained for compatibility
   const [message, setMessage] = useState({
     status: "There is no message yet.",
     timestamp: formatDate(),
   });
 
   const [devices, setDevices] = useState([]);
-  const [showCarePalDashboard, setShowCarePalDashboard] = useState(false);
   
-  // Handle Fetch Devices onClick
+  // Load backend status on mount (for Firebase connectivity)
+  useEffect(() => {
+    handleFetchStatus();
+  }, []);
+
+  // Handle Fetch Devices onClick - keeping this function for compatibility
   async function handleFetchDevices() {
     try {
       const response = await fetch(
@@ -91,34 +96,15 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    handleFetchStatus();
-  }, []);
-
-  // Toggle between the original app view and the CarePal dashboard
-  const toggleView = () => {
-    setShowCarePalDashboard(!showCarePalDashboard);
-    console.log("View toggled to:", !showCarePalDashboard ? "CarePal Dashboard" : "Original View");
-  };
-
-  // If showCarePalDashboard is true, display the MobileMonitorDashboard component
-  if (showCarePalDashboard) {
-    return (
-      <div className="App">
-        <div className="absolute top-2 right-2 z-10">
-          <button 
-            onClick={toggleView}
-            className="bg-white text-gray-900 px-4 py-2 rounded-lg shadow-md hover:bg-gray-200 transition-colors"
-          >
-            Back to Original View
-          </button>
-        </div>
-        <MobileMonitorDashboard />
-      </div>
-    );
-  }
-
-  // Otherwise, display the original app view
+  // Display MobileMonitorDashboard as the main view
+  return (
+    <div className="App">
+      <MobileMonitorDashboard />
+    </div>
+  );
+  
+  /*
+  // Original App View (commented out as requested)
   return (
     <div className="App">
       <header className="App-header">
@@ -139,17 +125,10 @@ function App() {
         <button onClick={handleFetchStatus}>Is Firebase Connected?</button>
         <button onClick={handleFetchDevices}>Fetch Devices!</button>
         <div>{devices ? devices : ""}</div>
-        
-        {/* Button to switch to the CarePal Mobile Dashboard */}
-        <button 
-          onClick={toggleView}
-          className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
-        >
-          Switch to CarePal Dashboard
-        </button>
       </header>
     </div>
   );
+  */
 }
 
 export default App;
