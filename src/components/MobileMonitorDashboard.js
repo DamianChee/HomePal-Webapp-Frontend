@@ -70,7 +70,7 @@ function MobileMonitorDashboard() {
   const [currentPages, setCurrentPages] = useState({
     Today: 1,
     Yesterday: 1,
-    "Past Week": 1,
+    PastWeek: 1,
   }); // Separate pagination for each date
   const initialEventsToShow = 3;
   const expandedEventsToShow = 5;

@@ -117,6 +117,8 @@ function EventTimeline({
             // Skip rendering if no events to show
             if (filteredEvents.length === 0) return null;
 
+            console.log(date);
+
             return (
               <DateEvents
                 key={date}
