@@ -13,6 +13,8 @@ import {
   filterHistoryEvents,
 } from "./utils";
 
+import { getDateObject } from "../utils/dateFormatter";
+
 // Import component modules
 import HeaderSection from "./HeaderSection";
 import StatusSection from "./StatusSection";
@@ -48,6 +50,12 @@ function MobileMonitorDashboard() {
     end: "06:00",
   });
 
+  const dateObject = getDateObject();
+
+  const today = `${dateObject.getDate()}/${
+    dateObject.getMonth() + 1
+  }/${dateObject.getFullYear()}`;
+
   // Modal states
   const [showRoomSettings, setShowRoomSettings] = useState(false);
   const [showScheduleSettings, setShowScheduleSettings] = useState(false);
@@ -76,7 +84,7 @@ function MobileMonitorDashboard() {
   const expandedEventsToShow = 5;
 
   // History view state
-  const [historyDateFilter, setHistoryDateFilter] = useState("Today");
+  const [historyDateFilter, setHistoryDateFilter] = useState(today);
 
   // Use imported mock events data
   const events = mockEvents;
@@ -231,7 +239,7 @@ function MobileMonitorDashboard() {
         selectedEvent={selectedEvent}
         onSetShowHistory={() => {
           setShowHistory(true);
-          setHistoryDateFilter("Today");
+          setHistoryDateFilter(today);
           setCurrentPages({ ...currentPages, Today: 1 });
         }}
         onSetShowFilters={() => setShowFilters(true)}
@@ -271,12 +279,12 @@ function MobileMonitorDashboard() {
               <div className="flex space-x-2">
                 <button
                   className={`px-3 py-1 ${
-                    historyDateFilter === "Today"
+                    historyDateFilter === today
                       ? "bg-indigo-600 text-white"
                       : "bg-gray-700 text-gray-300"
                   } text-sm rounded-full`}
                   onClick={() => {
-                    setHistoryDateFilter("Today");
+                    setHistoryDateFilter(today);
                     // Reset pagination when changing filters
                     setCurrentPages({ ...currentPages, Today: 1 });
                     console.log("History filter set to: Today");
