@@ -477,8 +477,8 @@ function MobileMonitorDashboard() {
                         <span
                           className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
                             alertSettings.bedExit
-                              ? "translate-x-6"
-                              : "translate-x-1"
+                              ? "translate-x-1"
+                              : "-translate-x-6"
                           } top-0.5`}
                         ></span>
                       </span>
