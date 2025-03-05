@@ -37,5 +37,18 @@ function getDateObject() {
   return adjustToAsiaTimeZone;
 }
 
+const parseTime = (timeStr) => {
+  const [time, period] = timeStr.split(" ");
+  const [hours, minutes] = time.split(":").map(Number);
+
+  // Convert to 24-hour format
+  let hour = hours;
+  if (period === "PM" && hours !== 12) hour += 12;
+  if (period === "AM" && hours === 12) hour = 0;
+
+  return hour * 60 + minutes;
+};
+
 module.exports = formatDate;
 module.exports = getDateObject;
+module.exports = parseTime;
