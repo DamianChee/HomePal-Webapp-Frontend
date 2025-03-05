@@ -1,23 +1,17 @@
 export function formatDate() {
   const date = new Date(Date.now());
 
-  const damiansDate = new Date(
-    date.toLocaleString("en-US", {
-      timeZone: "Asia/Shanghai",
-    })
-  );
-
   // Format time
-  const hours = damiansDate.getHours();
-  const minutes = damiansDate.getMinutes();
-  const seconds = damiansDate.getSeconds();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
   const ampm = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12;
 
   // Format date
-  const day = damiansDate.getDate();
-  const month = damiansDate.getMonth() + 1;
-  const year = damiansDate.getFullYear();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
 
   // Return formatted string
   return `${formattedHours}:${minutes.toString().padStart(2, "0")}:${seconds
@@ -26,23 +20,16 @@ export function formatDate() {
 }
 
 export function getDateObject() {
-  // console.log("--- Starting getDateObject() ---");
-
   try {
+    // Simply use the local date object without timezone adjustments
     const dateObject = new Date();
-    // console.log("Initial date:", dateObject.toString());
-
-    const adjustedDate = new Date(dateObject.getTime());
-    const shanghaiOffset = 8 * 60; // Asia/Shanghai is UTC+8
-
-    adjustedDate.setHours(dateObject.getUTCHours() + shanghaiOffset);
-
-    if (isNaN(adjustedDate.getTime())) {
+    
+    if (isNaN(dateObject.getTime())) {
       console.error("ERROR: Invalid date object created!");
       return null;
     }
 
-    return adjustedDate;
+    return dateObject;
   } catch (error) {
     console.error("ERROR in getDateObject:", error);
     return null;
@@ -68,7 +55,3 @@ export const parseTime = (timeStr) => {
 
   return hour * 60 + minuteNum;
 };
-
-// module.exports = formatDate;
-// module.exports = getDateObject;
-// module.exports = parseTime;

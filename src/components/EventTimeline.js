@@ -52,9 +52,13 @@ function EventTimeline({
     dateObject.getMonth() + 1
   }/${dateObject.getFullYear()}`;
 
-  const yesterday = `${dateObject.getDate() - 1}/${
-    dateObject.getMonth() + 1
-  }/${dateObject.getFullYear()}`;
+  // Calculate yesterday properly using a Date object
+  const yesterdayObject = new Date(dateObject);
+  yesterdayObject.setDate(dateObject.getDate() - 1);
+  
+  const yesterday = `${yesterdayObject.getDate()}/${
+    yesterdayObject.getMonth() + 1
+  }/${yesterdayObject.getFullYear()}`;
 
   return (
     <div className="px-4 py-3">
