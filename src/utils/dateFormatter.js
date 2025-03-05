@@ -26,16 +26,36 @@ function formatDate() {
 }
 
 function getDateObject() {
+  console.log("--- Starting getDateObject() ---");
+
+  // Step 1: Get initial date
   const dateObject = new Date();
-  // Store the original timestamp
-  const timestamp = dateObject.getTime();
+  console.log("Initial date:", dateObject.toString());
+  console.log("Initial timestamp:", dateObject.getTime());
 
-  // Create new Date object with the same timestamp
-  const adjustedDate = new Date(timestamp);
+  // Step 2: Store original timestamp
+  const originalTimestamp = dateObject.getTime();
+  console.log("Original timestamp:", originalTimestamp);
 
-  // Adjust hours manually
-  const asiaOffset = 8 * 60; // Asia/Shanghai is UTC+8
-  adjustedDate.setHours(dateObject.getUTCHours() + asiaOffset);
+  // Step 3: Create adjusted date
+  const adjustedDate = new Date(originalTimestamp);
+  console.log("Adjusted date before modification:", adjustedDate.toString());
+
+  // Step 4: Apply timezone adjustment manually
+  const shanghaiOffset = 8 * 60; // Asia/Shanghai is UTC+8
+  const currentHours = dateObject.getUTCHours();
+  console.log("Current UTC hours:", currentHours);
+  console.log("Applying offset:", shanghaiOffset, "minutes");
+
+  adjustedDate.setHours(currentHours + shanghaiOffset);
+  console.log("Final date:", adjustedDate.toString());
+  console.log("Final timestamp:", adjustedDate.getTime());
+
+  // Verify date integrity
+  if (isNaN(adjustedDate.getTime())) {
+    console.error("ERROR: Invalid date object created!");
+    return null;
+  }
 
   return adjustedDate;
 }
