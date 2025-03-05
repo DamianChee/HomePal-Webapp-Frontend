@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  AlertTriangle,
-  Bell,
-  BellOff,
-  Clock,
-  X,
-  Calendar,
-  User,
-  Home,
-  Filter,
-  ArrowLeft,
-  Edit2,
-  Moon,
-  MessageCircle,
-} from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 
 // Import mock data
 import mockEvents from "./mockData";
@@ -540,7 +526,7 @@ function MobileMonitorDashboard() {
                           className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
                             alertSettings.edgeDetection
                               ? "translate-x-1"
-                              : "translate-x-0"
+                              : "-translate-x-1"
                           } top-0.5`}
                         ></span>
                       </span>
