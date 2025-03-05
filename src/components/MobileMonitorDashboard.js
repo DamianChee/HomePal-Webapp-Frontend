@@ -525,8 +525,8 @@ function MobileMonitorDashboard() {
                         <span
                           className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
                             alertSettings.edgeDetection
-                              ? "translate-x-1"
-                              : "-translate-x-1"
+                              ? "scale-90"
+                              : "scale-100"
                           } top-0.5`}
                         ></span>
                       </span>
