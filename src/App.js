@@ -23,70 +23,70 @@ function App() {
   }, []);
 
   // Handle Fetch Devices onClick - keeping this function for compatibility
-  async function handleFetchDevices() {
-    try {
-      const response = await fetch(
-        "https://homepal-webapp-backend.vercel.app/devices",
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  // async function handleFetchDevices() {
+  //   try {
+  //     const response = await fetch(
+  //       "https://homepal-webapp-backend.vercel.app/devices",
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) {
-        const text = await response.text();
-        console.error(
-          "[App.js Response not ok] Backend devices fetch failed: ",
-          text
-        );
-        return "[App.js] Backend devices fetch failed:";
-      }
+  //     if (!response.ok) {
+  //       const text = await response.text();
+  //       console.error(
+  //         "[App.js Response not ok] Backend devices fetch failed: ",
+  //         text
+  //       );
+  //       return "[App.js] Backend devices fetch failed:";
+  //     }
 
-      const data = await response.json();
-      // Log to console instead of updating the UI directly
-      console.log("[App.js Response ok] Devices:", data);
-      setDevices(JSON.stringify(data));
-    } catch (error) {
-      console.error(
-        "[App.js error caught] Failed to check backend status: ",
-        error.message
-      );
-      return `[App.js] Failed to check backend status: ${error.message}`;
-    }
-  }
+  //     const data = await response.json();
+  //     // Log to console instead of updating the UI directly
+  //     console.log("[App.js Response ok] Devices:", data);
+  //     setDevices(JSON.stringify(data));
+  //   } catch (error) {
+  //     console.error(
+  //       "[App.js error caught] Failed to check backend status: ",
+  //       error.message
+  //     );
+  //     return `[App.js] Failed to check backend status: ${error.message}`;
+  //   }
+  // }
 
-  async function handleFetchStatus() {
-    try {
-      const response = await fetch(
-        "https://homepal-webapp-backend.vercel.app/api/status",
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  // async function handleFetchStatus() {
+  //   try {
+  //     const response = await fetch(
+  //       "https://homepal-webapp-backend.vercel.app/api/status",
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) {
-        const text = await response.text();
-        console.error(
-          "[index.js Response not ok] Backend status check failed: ",
-          text
-        );
-        return "[index.js] Backend status check failed:";
-      }
+  //     if (!response.ok) {
+  //       const text = await response.text();
+  //       console.error(
+  //         "[index.js Response not ok] Backend status check failed: ",
+  //         text
+  //       );
+  //       return "[index.js] Backend status check failed:";
+  //     }
 
-      const data = await response.json();
-      console.log("[index.js Response ok] Backend status:", data);
-      setMessage(data);
-    } catch (error) {
-      console.error(
-        "[index.js error caught] Failed to check backend status: ",
-        error.message
-      );
-      return `[index.js] Failed to check backend status: ${error.message}`;
-    }
-  }
+  //     const data = await response.json();
+  //     console.log("[index.js Response ok] Backend status:", data);
+  //     setMessage(data);
+  //   } catch (error) {
+  //     console.error(
+  //       "[index.js error caught] Failed to check backend status: ",
+  //       error.message
+  //     );
+  //     return `[index.js] Failed to check backend status: ${error.message}`;
+  //   }
+  // }
 
   // Display MobileMonitorDashboard as the main view
   return (
