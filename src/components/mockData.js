@@ -6,7 +6,7 @@
  * making it easier to maintain, test, and potentially replace with real API data.
  */
 
-import { getDateObject } from "./getDate.js";
+import { getDateObject } from "../utils/dateFormatter";
 
 console.log("--- Starting mockData.js ---");
 
