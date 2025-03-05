@@ -23,8 +23,8 @@ function HeaderSection({ roomName, onEditRoom }) {
       {/* Brand Header */}
       <div className="bg-indigo-900 px-4 py-3">
         <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 bg-indigo-500 rounded-lg flex">
-            <Moon className="h-5 w-5 text-white" />
+          <div className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+            <Moon className="h-5 w-5 text-white text-left" />
           </div>
           <div>
             <h1 className="text-white font-semibold">CarePal</h1>
