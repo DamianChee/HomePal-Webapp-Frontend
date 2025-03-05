@@ -112,7 +112,7 @@ function EventTimeline({
                 return false;
               })
               // Sort by timestamp (most recent first)
-              .sort((a, b) => parseTime(b.time) - parseTime(a.time));
+              .sort((a, b) => parseTime(a.time) - parseTime(b.time));
 
             // Skip rendering if no events to show
             if (filteredEvents.length === 0) return null;
