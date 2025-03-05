@@ -523,11 +523,9 @@ function MobileMonitorDashboard() {
                         }`}
                       >
                         <span
-                          className={`absolute h-5 w-5 justify-between rounded-full bg-white transform transition-transform duration-200 ${
-                            alertSettings.edgeDetection
-                              ? "max-w-[80px]"
-                              : "max-w-[120px]"
-                          } top-0.5`}
+                          className={`flex items-center justify-between rounded-lg bg-muted p-4 transition-all duration-300 ${
+                            smallSize ? "max-w-[80px]" : "max-w-[120px]"
+                          } ${smallSize ? "scale-90" : "scale-100"}`}
                         ></span>
                       </span>
                     </label>
