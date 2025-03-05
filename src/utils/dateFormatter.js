@@ -26,11 +26,11 @@ export function formatDate() {
 }
 
 export function getDateObject() {
-  console.log("--- Starting getDateObject() ---");
+  // console.log("--- Starting getDateObject() ---");
 
   try {
     const dateObject = new Date();
-    console.log("Initial date:", dateObject.toString());
+    // console.log("Initial date:", dateObject.toString());
 
     const adjustedDate = new Date(dateObject.getTime());
     const shanghaiOffset = 8 * 60; // Asia/Shanghai is UTC+8
