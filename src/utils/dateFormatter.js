@@ -25,7 +25,7 @@ function formatDate() {
     .padStart(2, "0")}${ampm} ${day}/${month}/${year}`;
 }
 
-function getDate() {
+function getDateObject() {
   const dateObject = new Date(Date.now());
 
   const adjustToAsiaTimeZone = new Date(
