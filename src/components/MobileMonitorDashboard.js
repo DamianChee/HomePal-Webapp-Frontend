@@ -137,10 +137,12 @@ function MobileMonitorDashboard() {
       setCurrentPages({ ...currentPages, [date]: 1 });
       console.log(`Showing less events for ${date}`);
     } else {
-      // If not expanded, expand
+      // If not expanded, expand and ensure we're on page 1
       setExpandedDates([...expandedDates, date]);
+      // Always reset to page 1 when expanding to ensure consistency
+      setCurrentPages({ ...currentPages, [date]: 1 });
       console.log(
-        `Showing more events for ${date}. Current page: ${currentPages[date]}`
+        `Showing more events for ${date}. Current page: 1`
       );
     }
   };
