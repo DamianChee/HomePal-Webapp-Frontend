@@ -90,12 +90,27 @@ export const filterEvents = (events, date, activeFilters) => {
 export const filterHistoryEvents = (events, historyDateFilter, activeFilters) => {
   let filteredEvents = [];
   
-  if (historyDateFilter === 'Today') {
-    filteredEvents = events.filter(event => event.date === 'Today');
+  // Get current date for comparison
+  const today = new Date();
+  const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+  
+  // Calculate one-week-ago date for "Past Week" filter
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(today.getDate() - 7);
+  
+  if (historyDateFilter === todayFormatted) {
+    // Today's date as a string
+    filteredEvents = events.filter(event => event.date === todayFormatted);
   } else if (historyDateFilter === 'Past Week') {
-    filteredEvents = events.filter(event => 
-      event.date === 'Today' || event.date === 'Yesterday' || event.date === 'Past Week'
-    );
+    // Events from last 7 days
+    filteredEvents = events.filter(event => {
+      // Parse the event date string into a Date object
+      const [day, month, year] = event.date.split('/').map(Number);
+      const eventDate = new Date(year, month - 1, day);
+      
+      // Include if event date is >= one week ago
+      return eventDate >= oneWeekAgo;
+    });
   } else if (historyDateFilter === 'All History') {
     filteredEvents = events; // All events
   }
@@ -109,5 +124,26 @@ export const filterHistoryEvents = (events, historyDateFilter, activeFilters) =>
       if (event.status === 'normal' && activeFilters.includes('normal')) return true;
       return false;
     })
-    .sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp (newest first)
+    .sort((a, b) => {
+      // Sort by date (newest first), then by time
+      const [aDay, aMonth, aYear] = a.date.split('/').map(Number);
+      const [bDay, bMonth, bYear] = b.date.split('/').map(Number);
+      
+      const dateA = new Date(aYear, aMonth - 1, aDay);
+      const dateB = new Date(bYear, bMonth - 1, bDay);
+      
+      if (dateB - dateA !== 0) return dateB - dateA;
+      
+      // If same date, compare by time
+      const aTime = a.time.split(' ')[0].split(':');
+      const bTime = b.time.split(' ')[0].split(':');
+      const aHour = parseInt(aTime[0]);
+      const bHour = parseInt(bTime[0]);
+      
+      if (aHour !== bHour) return bHour - aHour;
+      
+      const aMin = parseInt(aTime[1]);
+      const bMin = parseInt(bTime[1]);
+      return bMin - aMin;
+    });
 };

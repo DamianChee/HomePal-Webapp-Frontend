@@ -289,7 +289,7 @@ function MobileMonitorDashboard() {
                     setHistoryDateFilter(today);
                     // Reset pagination when changing filters
                     setCurrentPages({ ...currentPages, Today: 1 });
-                    console.log("History filter set to: Today");
+                    console.log("History filter set to today's date:", today);
                   }}
                 >
                   Today
