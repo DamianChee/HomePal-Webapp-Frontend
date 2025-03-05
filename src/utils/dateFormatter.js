@@ -25,4 +25,17 @@ function formatDate() {
     .padStart(2, "0")}${ampm} ${day}/${month}/${year}`;
 }
 
+function getDate() {
+  const dateObject = new Date(Date.now());
+
+  const adjustToAsiaTimeZone = new Date(
+    date.toLocaleString("en-US", {
+      timeZone: "Asia/Shanghai",
+    })
+  );
+
+  return adjustToAsiaTimeZone;
+}
+
 module.exports = formatDate;
+module.exports = getDateObject;

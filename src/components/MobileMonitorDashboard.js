@@ -333,21 +333,7 @@ function MobileMonitorDashboard() {
 
                 // Process event dates for display
                 filteredEvents.forEach((event) => {
-                  let displayDate;
-
-                  if (event.date === "Today") {
-                    displayDate = "February 24, 2025"; // Example date, could be dynamic
-                  } else if (event.date === "Yesterday") {
-                    displayDate = "February 23, 2025";
-                  } else {
-                    // For 'Past Week' items, create dates based on timestamp
-                    const eventDate = new Date(event.timestamp);
-                    displayDate = eventDate.toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    });
-                  }
+                  let displayDate = event.date;
 
                   if (!groupedEvents[displayDate]) {
                     groupedEvents[displayDate] = [];
