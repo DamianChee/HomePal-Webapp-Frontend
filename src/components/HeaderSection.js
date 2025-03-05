@@ -24,10 +24,10 @@ function HeaderSection({ roomName, onEditRoom }) {
       <div className="bg-indigo-900 px-4 py-3">
         <div className="flex items-center space-x-2">
           <div className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center">
-            <Moon className="h-5 w-5 text-white text-left" />
+            <Moon className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-white font-semibold">CarePal</h1>
+            <h1 className="text-white font-semibold text-left">CarePal</h1>
             <p className="text-indigo-200 text-xs">Night Bed Care Monitor</p>
           </div>
         </div>
