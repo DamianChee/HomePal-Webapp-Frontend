@@ -1,4 +1,4 @@
-function formatDate() {
+export function formatDate() {
   const date = new Date(Date.now());
 
   const damiansDate = new Date(
@@ -49,7 +49,7 @@ export function getDateObject() {
   }
 }
 
-const parseTime = (timeStr) => {
+export const parseTime = (timeStr) => {
   if (!timeStr?.trim()) return null; // Return null for invalid inputs
 
   const [time, period] = timeStr.split(" ") || [];
@@ -69,6 +69,6 @@ const parseTime = (timeStr) => {
   return hour * 60 + minuteNum;
 };
 
-module.exports = formatDate;
+// module.exports = formatDate;
 // module.exports = getDateObject;
-module.exports = parseTime;
+// module.exports = parseTime;
