@@ -56,6 +56,9 @@ function EventTimeline({
     dateObject.getMonth() + 1
   }/${dateObject.getFullYear()}`;
 
+  console.log(today.toString());
+  console.log(yesterday.toString());
+
   return (
     <div className="px-4 py-3">
       <div className="bg-gray-800 rounded-lg overflow-hidden">
