@@ -6,11 +6,12 @@
  * making it easier to maintain, test, and potentially replace with real API data.
  */
 
-import getDateObject from "../utils/dateFormatter";
+import { getDateObject } from "./getDate.js";
+
+console.log("--- Starting mockData.js ---");
 
 const today = getDateObject();
-
-console.log(today);
+console.log("Today:", today);
 
 // Export mock events data
 const mockEvents = [
