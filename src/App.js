@@ -19,7 +19,7 @@ import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 function App() {
   // Load backend status on mount (for Firebase connectivity)
   useEffect(() => {
-    handleFetchStatus();
+    // handleFetchStatus();
   }, []);
 
   // Handle Fetch Devices onClick - keeping this function for compatibility
