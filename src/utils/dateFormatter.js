@@ -26,15 +26,18 @@ function formatDate() {
 }
 
 function getDateObject() {
-  const dateObject = new Date(Date.now());
+  const dateObject = new Date();
+  // Store the original timestamp
+  const timestamp = dateObject.getTime();
 
-  const adjustToAsiaTimeZone = new Date(
-    dateObject.toLocaleString("en-US", {
-      timeZone: "Asia/Shanghai",
-    })
-  );
+  // Create new Date object with the same timestamp
+  const adjustedDate = new Date(timestamp);
 
-  return adjustToAsiaTimeZone;
+  // Adjust hours manually
+  const asiaOffset = 8 * 60; // Asia/Shanghai is UTC+8
+  adjustedDate.setHours(dateObject.getUTCHours() + asiaOffset);
+
+  return adjustedDate;
 }
 
 const parseTime = (timeStr) => {
