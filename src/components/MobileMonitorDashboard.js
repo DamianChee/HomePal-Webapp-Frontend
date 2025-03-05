@@ -523,10 +523,10 @@ function MobileMonitorDashboard() {
                         }`}
                       >
                         <span
-                          className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
+                          className={`absolute h-5 w-5 justify-between rounded-full bg-white transform transition-transform duration-200 ${
                             alertSettings.edgeDetection
-                              ? "scale-90"
-                              : "scale-100"
+                              ? "max-w-[80px]"
+                              : "max-w-[120px]"
                           } top-0.5`}
                         ></span>
                       </span>
