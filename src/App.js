@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import formatDate from "./utils/dateFormatter";
+// import formatDate from "./utils/dateFormatter";
 import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 
 /**
  * App Component
- * 
+ *
  * Main application component that serves as the entry point.
  * Now using CarePal Mobile Dashboard as the default view.
  * The original app functionality is kept but commented out.
- * 
+ *
  * The App includes:
  * 1. CarePal dashboard as the main view
  * 2. Firebase connectivity available in the background
  * 3. Uses modern React practices (hooks, functional components)
  */
 function App() {
-  // Original app state maintained for compatibility
-  const [message, setMessage] = useState({
-    status: "There is no message yet.",
-    timestamp: formatDate(),
-  });
-
-  const [devices, setDevices] = useState([]);
-  
   // Load backend status on mount (for Firebase connectivity)
   useEffect(() => {
     handleFetchStatus();
@@ -102,7 +94,7 @@ function App() {
       <MobileMonitorDashboard />
     </div>
   );
-  
+
   /*
   // Original App View (commented out as requested)
   return (
