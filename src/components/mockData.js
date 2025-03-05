@@ -14,9 +14,6 @@ console.log(today);
 
 // Export mock events data
 const mockEvents = [
-  // Today's events (10 events)
-
-  // Divider
   {
     id: 1,
     time: "10:45 PM",
