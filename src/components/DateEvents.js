@@ -74,15 +74,17 @@ function DateEvents({
         />
       ))}
       
-      {/* Show More/Less button */}
-      <div className="px-3 py-2 border-t border-gray-700">
-        <button 
-          className="w-full text-center text-blue-400 text-sm hover:text-blue-300 transition-colors"
-          onClick={() => onToggleExpand(date)}
-        >
-          {isExpanded ? 'Show Less' : 'Show More'}
-        </button>
-      </div>
+      {/* Show More/Less button - only show if there are more events than the initial count */}
+      {filteredEvents.length > initialEventsToShow && (
+        <div className="px-3 py-2 border-t border-gray-700">
+          <button 
+            className="w-full text-center text-blue-400 text-sm hover:text-blue-300 transition-colors"
+            onClick={() => onToggleExpand(date)}
+          >
+            {isExpanded ? 'Show Less' : 'Show More'}
+          </button>
+        </div>
+      )}
       
       {/* Pagination controls - only show if expanded and has multiple pages */}
       {isExpanded && totalPages > 1 && (
