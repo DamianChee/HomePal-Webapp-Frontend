@@ -279,7 +279,7 @@ function MobileMonitorDashboard() {
               <div className="flex space-x-2">
                 <button
                   className={`px-3 py-1 ${
-                    historyDateFilter === today
+                    historyDateFilter === "Today"
                       ? "bg-indigo-600 text-white"
                       : "bg-gray-700 text-gray-300"
                   } text-sm rounded-full`}
