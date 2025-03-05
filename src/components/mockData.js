@@ -8,15 +8,9 @@
 
 import getDateObject from "../utils/dateFormatter";
 
-// Helper function to create timestamp for today with specified hours/minutes
-const createTimestamp = (hours, minutes, daysAgo = 0) => {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  date.setHours(hours, minutes, 0, 0);
-  return date.getTime();
-};
-
 const today = getDateObject();
+
+console.log(today);
 
 // Export mock events data
 const mockEvents = [
