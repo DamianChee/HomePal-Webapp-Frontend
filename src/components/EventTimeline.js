@@ -2,8 +2,6 @@ import React from "react";
 import { Calendar, Filter } from "lucide-react";
 import DateEvents from "./DateEvents";
 import { getDateObject, parseTime } from "../utils/dateFormatter";
-// import getDateObject from "../utils/dateFormatter";
-// import parseTime from "../utils/dateFormatter";
 
 /**
  * EventTimeline Component
