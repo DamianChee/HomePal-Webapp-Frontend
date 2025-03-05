@@ -38,15 +38,23 @@ function getDateObject() {
 }
 
 const parseTime = (timeStr) => {
-  const [time, period] = timeStr.split(" ");
-  const [hours, minutes] = time.split(":").map(Number);
+  if (!timeStr?.trim()) return null; // Return null for invalid inputs
 
-  // Convert to 24-hour format
-  let hour = hours;
-  if (period === "PM" && hours !== 12) hour += 12;
-  if (period === "AM" && hours === 12) hour = 0;
+  const [time, period] = timeStr.split(" ") || [];
+  if (!time || !period) return null;
 
-  return hour * 60 + minutes;
+  const [hours, minutes] = time.split(":") || [];
+  if (!hours || !minutes) return null;
+
+  const hourNum = parseInt(hours);
+  const minuteNum = parseInt(minutes);
+  if (isNaN(hourNum) || isNaN(minuteNum)) return null;
+
+  let hour = hourNum;
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + minuteNum;
 };
 
 module.exports = formatDate;
