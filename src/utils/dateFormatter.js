@@ -29,7 +29,7 @@ function getDate() {
   const dateObject = new Date(Date.now());
 
   const adjustToAsiaTimeZone = new Date(
-    date.toLocaleString("en-US", {
+    dateObject.toLocaleString("en-US", {
       timeZone: "Asia/Shanghai",
     })
   );
