@@ -477,8 +477,8 @@ function MobileMonitorDashboard() {
                         <span
                           className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
                             alertSettings.bedExit
-                              ? "translate-x-1"
-                              : "translate-x-0"
+                              ? "translate-x-6"
+                              : "translate-x-1"
                           } top-0.5`}
                         ></span>
                       </span>
@@ -523,10 +523,12 @@ function MobileMonitorDashboard() {
                         }`}
                       >
                         <span
-                          className={`flex items-center justify-between rounded-lg bg-muted p-4 transition-all duration-300 ${
-                            smallSize ? "max-w-[80px]" : "max-w-[120px]"
-                          } ${smallSize ? "scale-90" : "scale-100"}`}
-                        ></span>
+                          className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
+                            alertSettings.bedExit
+                              ? "translate-x-1" // Move left for ON state
+                              : "translate-x-6" // Move right for OFF state
+                          } top-0.5`}
+                        />
                       </span>
                     </label>
                   </div>
