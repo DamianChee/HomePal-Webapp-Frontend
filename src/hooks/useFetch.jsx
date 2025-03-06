@@ -1,6 +1,7 @@
 const useFetch = () => {
   const fetchData = async (endpoint, method, body, token = 0) => {
-    console.log(`[useFetch] ${process.env.REACT_APP_BACKEND_DOMAIN}`);
+    const text = process.env.REACT_APP_BACKEND_DOMAIN;
+    console.log(`[useFetch] ${text}`);
     const res = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + endpoint, {
       method,
       headers: {
