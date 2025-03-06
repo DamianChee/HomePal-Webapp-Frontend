@@ -1,6 +1,6 @@
 const useFetch = () => {
   const fetchData = async (endpoint, method, body, token = 0) => {
-    const text = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
+    const text = process.env.REACT_APP_BACKEND_DOMAIN;
     console.log(`[useFetch] ${text}`);
     const res = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + endpoint, {
       method,
