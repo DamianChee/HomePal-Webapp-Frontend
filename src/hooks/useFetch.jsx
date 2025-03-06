@@ -1,6 +1,6 @@
 const useFetch = () => {
   const fetchData = async (endpoint, method, body, token = 0) => {
-    const res = await fetch(process.env.BACKEND_DOMAIN + endpoint, {
+    const res = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + endpoint, {
       method,
       headers: {
         "Content-Type": "application/json",
