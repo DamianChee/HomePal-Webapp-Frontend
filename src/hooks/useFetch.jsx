@@ -8,7 +8,7 @@ const useFetch = () => {
       },
       body: JSON.stringify(body),
     });
-    const data = await res.json();
+    const data = await res.text();
 
     let returnValue = {};
     if (res.ok) {
