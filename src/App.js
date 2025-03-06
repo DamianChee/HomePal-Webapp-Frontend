@@ -20,8 +20,7 @@ function App() {
 
   const handleGetAPIStatus = async () => {
     try {
-      const response = fetchData("/api/status", "GET");
-
+      const response = await fetchData("/api/status", "GET");
       if (!response.ok) throw new Error(response.data);
       console.log(response.data);
     } catch (error) {
