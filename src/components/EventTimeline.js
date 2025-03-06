@@ -55,7 +55,7 @@ function EventTimeline({
   // Calculate yesterday properly using a Date object
   const yesterdayObject = new Date(dateObject);
   yesterdayObject.setDate(dateObject.getDate() - 1);
-  
+
   const yesterday = `${yesterdayObject.getDate()}/${
     yesterdayObject.getMonth() + 1
   }/${yesterdayObject.getFullYear()}`;
@@ -117,8 +117,6 @@ function EventTimeline({
 
             // Skip rendering if no events to show
             if (filteredEvents.length === 0) return null;
-
-            console.log(date);
 
             return (
               <DateEvents
