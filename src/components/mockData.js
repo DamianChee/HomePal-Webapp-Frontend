@@ -8,8 +8,6 @@
 
 import { getDateObject } from "../utils/dateFormatter";
 
-console.log("--- Starting mockData.js ---");
-
 const today = getDateObject();
 console.log("Today:", today);
 
