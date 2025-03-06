@@ -31,7 +31,7 @@ function App() {
   const handleGetAllEvents = async () => {
     try {
       // const res = await fetchData("/events", "GET");
-      const res = await fetchData(`/events/deviceid/RP42A00007`, "GET");
+      const res = await fetchData(`/events/deviceid/RP42A00004`, "GET");
       if (!res.ok) throw new Error(res.data);
       console.log(res.data.response);
     } catch (error) {
