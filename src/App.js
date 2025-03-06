@@ -22,7 +22,7 @@ function App() {
     try {
       const res = await fetchData("/api/status", "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log(res);
+      console.log(res.data);
     } catch (error) {
       console.error(`[App.js] Error has occured:`, error.message);
     }
