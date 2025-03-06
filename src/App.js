@@ -44,9 +44,12 @@ function App() {
       // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/latest`, "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log(`Latest: ${res.data.response}`);
+      console.log(res.data.response);
     } catch (error) {
-      console.error(`[handleGetAllEvents] Error has occured:`, error.message);
+      console.error(
+        `[handleGetLatestEvents] Error has occured:`,
+        error.message
+      );
     }
   };
 
@@ -55,9 +58,12 @@ function App() {
       // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log(`Recent: ${res.data.response}`);
+      console.log(`Recent: ${JSON.stringify(res.data.response)}`);
     } catch (error) {
-      console.error(`[handleGetAllEvents] Error has occured:`, error.message);
+      console.error(
+        `[handleGetRecentEvents] Error has occured:`,
+        error.message
+      );
     }
   };
 
