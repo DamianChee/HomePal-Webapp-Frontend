@@ -3,6 +3,7 @@ const useFetch = () => {
     const res = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + endpoint, {
       method,
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
