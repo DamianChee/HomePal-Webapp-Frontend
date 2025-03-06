@@ -21,11 +21,10 @@ function App() {
   const handleGetAPIStatus = async () => {
     try {
       const res = await fetchData("/api/status", "GET");
-      // if (!res.ok) throw new Error(res.data);
-      console.log(res);
+      if (!res.ok) throw new Error(res.data);
 
-      // const status = JSON.stringify(res.data);
-      // console.log(status);
+      const status = JSON.stringify(res.data);
+      console.log(status);
     } catch (error) {
       console.error(`[App.js] Error has occured:`, error.message);
     }
