@@ -11,7 +11,7 @@ const useFetch = () => {
       },
       body: JSON.stringify(body),
     });
-    const data = await res.text();
+    const data = await res.json();
 
     let returnValue = {};
     if (res.ok) {
