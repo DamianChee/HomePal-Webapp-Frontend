@@ -39,10 +39,34 @@ function App() {
     }
   };
 
+  const handleGetLatestEvents = async () => {
+    try {
+      // const res = await fetchData("/events", "GET");
+      const res = await fetchData(`/events/latest`, "GET");
+      if (!res.ok) throw new Error(res.data);
+      console.log(`Latest: ${res.data.response}`);
+    } catch (error) {
+      console.error(`[handleGetAllEvents] Error has occured:`, error.message);
+    }
+  };
+
+  const handleGetRecentEvents = async () => {
+    try {
+      // const res = await fetchData("/events", "GET");
+      const res = await fetchData(`/events/recent`, "GET");
+      if (!res.ok) throw new Error(res.data);
+      console.log(`Recent: ${res.data.response}`);
+    } catch (error) {
+      console.error(`[handleGetAllEvents] Error has occured:`, error.message);
+    }
+  };
+
   // Load backend status on mount (for Firebase connectivity)
   useEffect(() => {
     handleGetAPIStatus();
     handleGetAllEvents();
+    handleGetLatestEvents();
+    handleGetRecentEvents();
   }, []);
 
   // Handle Fetch Devices onClick - keeping this function for compatibility
