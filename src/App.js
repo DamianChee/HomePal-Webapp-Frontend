@@ -24,7 +24,7 @@ function App() {
       if (!response.ok) throw new Error(response.data);
       console.log(response.data);
     } catch (error) {
-      console.error(`[App.js] Error has occured:`, error);
+      console.error(`[App.js] Error has occured:`, error.message);
     }
   };
 
