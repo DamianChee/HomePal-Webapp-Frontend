@@ -10,6 +10,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-console.log("[FRONTEND] Firebase client SDK initialized");
+console.log("[Firebase.js] Firebase client SDK initialized");
 
 export { app, auth };
