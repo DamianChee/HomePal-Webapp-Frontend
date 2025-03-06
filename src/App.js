@@ -22,15 +22,26 @@ function App() {
     try {
       const res = await fetchData("/api/status", "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log(res.data);
+      console.log(res.data.response);
     } catch (error) {
-      console.error(`[App.js] Error has occured:`, error.message);
+      console.error(`[handleGetAPIStatus] Error has occured:`, error.message);
+    }
+  };
+
+  const handleGetAllEvents = async () => {
+    try {
+      const res = await fetchData("/events", "GET");
+      if (!res.ok) throw new Error(res.data);
+      console.log(res.data.response);
+    } catch (error) {
+      console.error(`[handleGetAllEvents] Error has occured:`, error.message);
     }
   };
 
   // Load backend status on mount (for Firebase connectivity)
   useEffect(() => {
     handleGetAPIStatus();
+    handleGetAllEvents();
   }, []);
 
   // Handle Fetch Devices onClick - keeping this function for compatibility
