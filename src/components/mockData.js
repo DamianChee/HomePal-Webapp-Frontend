@@ -36,6 +36,7 @@ const fetchEvents = async (fetchFn) => {
 
     const events = transformLiveEvents(rawData);
     console.log("Transformed Events:", events);
+    console.log("Mock Data:", mockEvents);
     return events;
   } catch (error) {
     console.error("[fetchEvents] Error processing events:", error.message);
