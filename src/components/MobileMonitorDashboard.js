@@ -407,7 +407,7 @@ function MobileMonitorDashboard() {
                         >
                           <div
                             className={`mt-0.5 h-3 w-3 rounded-full flex-shrink-0 ${getStatusColor(
-                              event.status
+                              event.event
                             )}`}
                           />
                           <div className="flex-1">

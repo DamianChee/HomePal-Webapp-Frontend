@@ -96,18 +96,23 @@ function EventTimeline({
               .filter((event) => {
                 if (activeFilters.includes("all")) return true;
                 if (
-                  event.status === "critical" &&
-                  activeFilters.includes("critical")
+                  event.event === "Bedside-Fall" &&
+                  activeFilters.includes("Bedside-Fall")
                 )
                   return true;
                 if (
-                  event.status === "warning" &&
-                  activeFilters.includes("warning")
+                  event.status === "Attempted-Bed-Exit" &&
+                  activeFilters.includes("Attempted-Bed-Exit")
                 )
                   return true;
                 if (
-                  event.status === "normal" &&
-                  activeFilters.includes("normal")
+                  event.status === "Attempted-Bed-Exit" &&
+                  activeFilters.includes("Attempted-Bed-Exit")
+                )
+                  return true;
+                if (
+                  event.status === "Bed-Entry" &&
+                  activeFilters.includes("Bed-Entry")
                 )
                   return true;
                 return false;

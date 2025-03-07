@@ -78,18 +78,18 @@ export const filterEvents = (events, date, activeFilters) => {
       .filter((event) => {
         if (activeFilters.includes("all")) return true;
         if (
-          event.status === "Bedside-Fall" &&
+          event.event === "Bedside-Fall" &&
           activeFilters.includes("Bedside-Fall")
         )
           return true;
-        if (event.status === "Bed-Exit" && activeFilters.includes("Bed-Exit"))
+        if (event.event === "Bed-Exit" && activeFilters.includes("Bed-Exit"))
           return true;
         if (
-          event.status === "Attempted-Bed-Exit" &&
+          event.event === "Attempted-Bed-Exit" &&
           activeFilters.includes("Attempted-Bed-Exit")
         )
           return true;
-        if (event.status === "Bed-Entry" && activeFilters.includes("Bed-Entry"))
+        if (event.event === "Bed-Entry" && activeFilters.includes("Bed-Entry"))
           return true;
         return false;
       })
@@ -144,11 +144,19 @@ export const filterHistoryEvents = (
   return filteredEvents
     .filter((event) => {
       if (activeFilters.includes("all")) return true;
-      if (event.status === "critical" && activeFilters.includes("critical"))
+      if (
+        event.event === "Bedside-Fall" &&
+        activeFilters.includes("Bedside-Fall")
+      )
         return true;
-      if (event.status === "warning" && activeFilters.includes("warning"))
+      if (
+        event.event === "Attempted-Bed-Exit" &&
+        activeFilters.includes("Attempted-Bed-Exit")
+      )
         return true;
-      if (event.status === "normal" && activeFilters.includes("normal"))
+      if (event.event === "Bed-Exit" && activeFilters.includes("Bed-Exit"))
+        return true;
+      if (event.event === "Bed-Entry" && activeFilters.includes("Bed-Entry"))
         return true;
       return false;
     })
