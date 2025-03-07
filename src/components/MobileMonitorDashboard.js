@@ -46,6 +46,7 @@ function MobileMonitorDashboard() {
       // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
+      return res.data.response;
     } catch (error) {
       console.error(
         `[handleGetRecentEvents] Error has occured:`,
