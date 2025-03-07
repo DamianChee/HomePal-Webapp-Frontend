@@ -14,11 +14,9 @@ console.log("Today:", today);
 const transformLiveEvent = (liveEvent) => ({
   id: liveEvent.eventId,
   time: new Date(liveEvent.time).toLocaleTimeString(),
-  date: new Date(liveEvent.time).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-  }),
+  date: new Date(liveEvent.time)
+    .toLocaleDateString("en-GB")
+    .replace(/0(\d)/g, "$1"),
   event: liveEvent.action,
   status: liveEvent.isHandled ? "Handled" : "Unhandled",
   description: liveEvent.action,
