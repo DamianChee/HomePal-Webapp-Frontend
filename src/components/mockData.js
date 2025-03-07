@@ -11,16 +11,21 @@ import { getDateObject } from "../utils/dateFormatter";
 const today = getDateObject();
 console.log("Today:", today);
 
-const transformLiveEvent = (liveEvent) => ({
-  id: liveEvent.eventId,
-  time: new Date(liveEvent.time).toLocaleTimeString(),
-  date: new Date(liveEvent.time)
-    .toLocaleDateString("en-GB")
-    .replace(/0(\d)/g, "$1"),
-  event: liveEvent.action,
-  status: liveEvent.isHandled ? "Handled" : "Unhandled",
-  description: liveEvent.action,
-});
+const transformLiveEvent = (liveEvent) => {
+  const date = new Date(liveEvent.time);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  return {
+    id: liveEvent.eventId,
+    time: date.toLocaleTimeString(),
+    date: `${day}/${month}/${year}`,
+    event: liveEvent.action,
+    status: liveEvent.isHandled ? "Handled" : "Unhandled",
+    description: liveEvent.action,
+  };
+};
 
 const transformLiveEvents = (liveEvents) => {
   return liveEvents.map(transformLiveEvent);
