@@ -13,8 +13,8 @@ console.log("Today:", today);
 
 const transformLiveEvent = (liveEvent) => ({
   id: liveEvent.eventId,
-  time: liveEvent.date.time(),
-  date: liveEvent.date.getDate(),
+  time: new Date(liveEvent.time).toLocaleTimeString(),
+  date: new Date(liveEvent.time).toLocaleDateString(),
   event: liveEvent.action,
   status: liveEvent.isHandled ? "Handled" : "Unhandled",
   description: liveEvent.action,
@@ -24,12 +24,23 @@ const transformLiveEvents = (liveEvents) => {
   return liveEvents.map(transformLiveEvent);
 };
 
-const fetchEvents = async (fn) => {
-  const rawData = await fn(); // Use live data
-  const events = transformLiveEvents(rawData);
-  console.log(events);
+const fetchEvents = async (fetchFn) => {
+  try {
+    const rawData = await fetchFn();
+    console.log(`Raw Data from fetch:`, rawData);
 
-  return events;
+    // Validate response structure
+    if (!Array.isArray(rawData)) {
+      throw new Error("Invalid response format: expected array");
+    }
+
+    const events = transformLiveEvents(rawData);
+    console.log("Transformed Events:", events);
+    return events;
+  } catch (error) {
+    console.error("[fetchEvents] Error processing events:", error.message);
+    throw error;
+  }
 };
 
 // Export mock events data

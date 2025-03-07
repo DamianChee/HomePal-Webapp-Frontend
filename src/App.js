@@ -70,8 +70,8 @@ function App() {
   useEffect(() => {
     handleGetAPIStatus();
     // handleGetAllEvents();
-    handleGetLatestEvents();
-    handleGetRecentEvents();
+    // handleGetLatestEvents();
+    // handleGetRecentEvents();
   }, []);
 
   // Display MobileMonitorDashboard as the main view

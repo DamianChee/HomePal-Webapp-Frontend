@@ -46,7 +46,6 @@ function MobileMonitorDashboard() {
       // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log(res.data.response);
     } catch (error) {
       console.error(
         `[handleGetRecentEvents] Error has occured:`,
@@ -65,6 +64,7 @@ function MobileMonitorDashboard() {
     start: "22:00",
     end: "06:00",
   });
+  const [events, setEvents] = useState([]);
 
   const dateObject = getDateObject();
 
@@ -103,7 +103,7 @@ function MobileMonitorDashboard() {
   const [historyDateFilter, setHistoryDateFilter] = useState(today);
 
   // Use imported mock events data
-  const events = fetchEvents(handleGetRecentEvents);
+  // const events = fetchEvents(handleGetRecentEvents);
 
   // For custom duration
   const [customDuration, setCustomDuration] = useState(1); // Default 1 day
@@ -195,6 +195,21 @@ function MobileMonitorDashboard() {
     } catch (error) {
       console.error("Error loading settings:", error);
     }
+
+    const loadEvents = async () => {
+      try {
+        // Use your existing fetchEvents function
+        const fetchedEvents = await fetchEvents(handleGetRecentEvents);
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
   }, []);
 
   // Save settings when they change
