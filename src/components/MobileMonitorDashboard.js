@@ -203,9 +203,6 @@ function MobileMonitorDashboard() {
         setEvents(fetchedEvents);
       } catch (error) {
         console.error("Failed to fetch events:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
