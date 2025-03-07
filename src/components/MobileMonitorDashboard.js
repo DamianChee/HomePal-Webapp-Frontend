@@ -624,23 +624,23 @@ function MobileMonitorDashboard() {
 
               <button
                 className={`w-full p-3 text-left rounded-lg ${
-                  activeFilters.includes("critical")
+                  activeFilters.includes("Bedside-Fall")
                     ? "bg-blue-600"
                     : "bg-gray-700 hover:bg-gray-600"
                 } flex items-center space-x-3`}
                 onClick={() => {
                   if (activeFilters.includes("all")) {
-                    setActiveFilters(["critical"]);
-                  } else if (activeFilters.includes("critical")) {
+                    setActiveFilters(["Bedside-Fall"]);
+                  } else if (activeFilters.includes("Bedside-Fall")) {
                     setActiveFilters(
-                      activeFilters.filter((f) => f !== "critical")
+                      activeFilters.filter((f) => f !== "Bedside-Fall")
                     );
                   } else {
-                    setActiveFilters([...activeFilters, "critical"]);
+                    setActiveFilters([...activeFilters, "Bedside-Fall"]);
                   }
 
                   // Log to console
-                  console.log("Filter updated: critical events");
+                  console.log("Filter updated: Bedside-Fall events");
                 }}
               >
                 <div className="h-3 w-3 bg-red-500 rounded-full"></div>
@@ -656,23 +656,23 @@ function MobileMonitorDashboard() {
 
               <button
                 className={`w-full p-3 text-left rounded-lg ${
-                  activeFilters.includes("warning")
+                  activeFilters.includes("Attempted-Bed-Exit")
                     ? "bg-blue-600"
                     : "bg-gray-700 hover:bg-gray-600"
                 } flex items-center space-x-3`}
                 onClick={() => {
                   if (activeFilters.includes("all")) {
-                    setActiveFilters(["warning"]);
-                  } else if (activeFilters.includes("warning")) {
+                    setActiveFilters(["Attempted-Bed-Exit"]);
+                  } else if (activeFilters.includes("Attempted-Bed-Exit")) {
                     setActiveFilters(
-                      activeFilters.filter((f) => f !== "warning")
+                      activeFilters.filter((f) => f !== "Attempted-Bed-Exit")
                     );
                   } else {
-                    setActiveFilters([...activeFilters, "warning"]);
+                    setActiveFilters([...activeFilters, "Attempted-Bed-Exit"]);
                   }
 
                   // Log to console
-                  console.log("Filter updated: warning events");
+                  console.log("Filter updated: Attempted-Bed-Exit events");
                 }}
               >
                 <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
