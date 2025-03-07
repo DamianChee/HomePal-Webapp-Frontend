@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, ArrowLeft } from "lucide-react";
 
 // Import mock data
-import mockEvents from "./mockData";
+import fetchEvents from "./mockData";
 
 // Import utility functions
 import {
@@ -87,7 +87,7 @@ function MobileMonitorDashboard() {
   const [historyDateFilter, setHistoryDateFilter] = useState(today);
 
   // Use imported mock events data
-  const events = mockEvents;
+  const events = fetchEvents;
 
   // For custom duration
   const [customDuration, setCustomDuration] = useState(1); // Default 1 day
@@ -141,9 +141,7 @@ function MobileMonitorDashboard() {
       setExpandedDates([...expandedDates, date]);
       // Always reset to page 1 when expanding to ensure consistency
       setCurrentPages({ ...currentPages, [date]: 1 });
-      console.log(
-        `Showing more events for ${date}. Current page: 1`
-      );
+      console.log(`Showing more events for ${date}. Current page: 1`);
     }
   };
 
