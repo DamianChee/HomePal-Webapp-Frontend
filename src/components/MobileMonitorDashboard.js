@@ -14,6 +14,7 @@ import {
 } from "./utils";
 
 import { getDateObject } from "../utils/dateFormatter";
+import useFetch from "../hooks/useFetch";
 
 // Import component modules
 import HeaderSection from "./HeaderSection";
@@ -39,6 +40,21 @@ import RoomSettingsModal from "./modals/RoomSettingsModal";
  * 8. Props API: Clear interfaces between components
  */
 function MobileMonitorDashboard() {
+  const fetchData = useFetch();
+  const handleGetRecentEvents = async () => {
+    try {
+      // const res = await fetchData("/events", "GET");
+      const res = await fetchData(`/events/recent`, "GET");
+      if (!res.ok) throw new Error(res.data);
+      console.log(res.data.response);
+    } catch (error) {
+      console.error(
+        `[handleGetRecentEvents] Error has occured:`,
+        error.message
+      );
+    }
+  };
+
   // Core state
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [monitoringPaused, setMonitoringPaused] = useState(false);
@@ -87,7 +103,7 @@ function MobileMonitorDashboard() {
   const [historyDateFilter, setHistoryDateFilter] = useState(today);
 
   // Use imported mock events data
-  const events = fetchEvents;
+  const events = fetchEvents(handleGetRecentEvents);
 
   // For custom duration
   const [customDuration, setCustomDuration] = useState(1); // Default 1 day
