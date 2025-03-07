@@ -101,17 +101,17 @@ function EventTimeline({
                 )
                   return true;
                 if (
-                  event.status === "Attempted-Bed-Exit" &&
+                  event.event === "Attempted-Bed-Exit" &&
                   activeFilters.includes("Attempted-Bed-Exit")
                 )
                   return true;
                 if (
-                  event.status === "Attempted-Bed-Exit" &&
-                  activeFilters.includes("Attempted-Bed-Exit")
+                  event.event === "Bed-Exit" &&
+                  activeFilters.includes("Bed-Exit")
                 )
                   return true;
                 if (
-                  event.status === "Bed-Entry" &&
+                  event.event === "Bed-Entry" &&
                   activeFilters.includes("Bed-Entry")
                 )
                   return true;
