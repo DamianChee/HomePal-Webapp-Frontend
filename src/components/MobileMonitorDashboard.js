@@ -104,6 +104,7 @@ function MobileMonitorDashboard() {
 
   // Use imported mock events data
   const events = fetchEvents(handleGetRecentEvents);
+  console.log(events);
 
   // For custom duration
   const [customDuration, setCustomDuration] = useState(1); // Default 1 day
