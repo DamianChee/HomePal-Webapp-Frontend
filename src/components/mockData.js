@@ -11,6 +11,37 @@ import { getDateObject } from "../utils/dateFormatter";
 const today = getDateObject();
 console.log("Today:", today);
 
+const handleGetRecentEvents = async () => {
+  try {
+    // const res = await fetchData("/events", "GET");
+    const res = await fetchData(`/events/recent`, "GET");
+    if (!res.ok) throw new Error(res.data);
+    console.log(res.data.response);
+  } catch (error) {
+    console.error(`[handleGetRecentEvents] Error has occured:`, error.message);
+  }
+};
+
+const transformLiveEvent = (liveEvent) => ({
+  id: liveEvent.eventId,
+  time: liveEvent.date.time(),
+  date: liveEvent.date.getDate(),
+  event: liveEvent.action,
+  status: liveEvent.isHandled ? "Handled" : "Unhandled",
+  description: liveEvent.action,
+});
+
+const transformLiveEvents = (liveEvents) => {
+  return liveEvents.map(transformLiveEvent);
+};
+
+const fetchEvents = async () => {
+  const rawData = await handleGetRecentEvents(); // Use live data
+  const events = transformLiveEvents(rawData);
+
+  return events;
+};
+
 // Export mock events data
 const mockEvents = [
   {
@@ -155,4 +186,5 @@ const mockEvents = [
   },
 ];
 
-export default mockEvents;
+// export default mockEvents;
+export default fetchEvents;
