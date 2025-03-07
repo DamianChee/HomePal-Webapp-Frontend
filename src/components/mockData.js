@@ -7,7 +7,7 @@
  */
 
 import { getDateObject } from "../utils/dateFormatter";
-import useFetch from "./hooks/useFetch";
+import useFetch from "../hooks/useFetch";
 
 const fetchData = useFetch();
 const today = getDateObject();
