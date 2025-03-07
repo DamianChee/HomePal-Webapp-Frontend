@@ -27,6 +27,7 @@ const transformLiveEvents = (liveEvents) => {
 const fetchEvents = async (fn) => {
   const rawData = await fn(); // Use live data
   const events = transformLiveEvents(rawData);
+  console.log(events);
 
   return events;
 };
