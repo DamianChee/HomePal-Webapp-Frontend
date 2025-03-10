@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import {
   getFirestore,
   collection,
@@ -106,22 +105,20 @@ const subscribeToEvents = (onEventAdded) => {
   try {
     // Check if Firestore is available
     if (!db) {
-      console.warn(
-        "[Firebase] Firestore not initialized, skipping event subscription"
-      );
+      console.warn('[Firebase] Firestore not initialized, skipping event subscription');
       return () => {}; // Return empty unsubscribe function
     }
-
+    
     const eventsRef = collection(db, "events");
     const recentEventsQuery = query(
       eventsRef,
       orderBy("time", "desc"),
       limit(20)
     );
-
+    
     // Listen for real-time updates with error handling
     return onSnapshot(
-      recentEventsQuery,
+      recentEventsQuery, 
       // Success callback
       (snapshot) => {
         try {
@@ -131,13 +128,12 @@ const subscribeToEvents = (onEventAdded) => {
                 id: change.doc.id,
                 ...change.doc.data(),
               };
-
+      
               // Check if this is actually a new event (not just initial load)
-              const eventTime =
-                newEvent.time?.toDate?.() || new Date(newEvent.time);
+              const eventTime = newEvent.time?.toDate?.() || new Date(newEvent.time);
               const currentTime = new Date();
               const timeDiffInSeconds = (currentTime - eventTime) / 1000;
-
+      
               // Only trigger for events that are less than 60 seconds old
               if (timeDiffInSeconds < 60) {
                 console.log("New event detected:", newEvent);
@@ -146,22 +142,20 @@ const subscribeToEvents = (onEventAdded) => {
             }
           });
         } catch (docError) {
-          console.error("[Firebase] Error processing snapshot:", docError);
+          console.error('[Firebase] Error processing snapshot:', docError);
         }
       },
       // Error callback
       (error) => {
-        console.error("[Firebase] Error in Firestore subscription:", error);
+        console.error('[Firebase] Error in Firestore subscription:', error);
         // Log detailed error info for debugging
-        if (error.code === "permission-denied") {
-          console.warn(
-            "[Firebase] Permission denied. Check your Firestore security rules."
-          );
+        if (error.code === 'permission-denied') {
+          console.warn('[Firebase] Permission denied. Check your Firestore security rules.');
         }
       }
     );
   } catch (error) {
-    console.error("[Firebase] Failed to subscribe to events:", error);
+    console.error('[Firebase] Failed to subscribe to events:', error);
     return () => {}; // Return empty unsubscribe function
   }
 };
@@ -170,12 +164,10 @@ const subscribeToEvents = (onEventAdded) => {
 const createMockEvent = async (eventType = "Bed-Exit") => {
   try {
     if (!db) {
-      console.error(
-        "[Firebase] Firestore not initialized, cannot create mock event"
-      );
+      console.error('[Firebase] Firestore not initialized, cannot create mock event');
       return null;
     }
-
+    
     const eventsRef = collection(db, "events");
 
     const newEvent = {
