@@ -187,41 +187,41 @@ function MobileMonitorDashboard({ newEvents = [], socketConnected = false }) {
   }, [pauseEndTime]);
 
   // WebSocket status is now passed as prop (socketConnected)
-
+  
   // Process incoming real-time events
   useEffect(() => {
     if (newEvents.length > 0) {
       // Process the latest event
       const latestEvent = newEvents[0];
-
+      
       // Transform to app format if needed
       const processedEvent = transformFirestoreEvent(latestEvent);
-
+      
       // Add to events list without duplicates
-      setEvents((prevEvents) => {
+      setEvents(prevEvents => {
         // Check if event already exists
-        const exists = prevEvents.some((e) => e.id === processedEvent.id);
+        const exists = prevEvents.some(e => e.id === processedEvent.id);
         if (exists) return prevEvents;
-
+        
         // Add new event at the beginning
         return [processedEvent, ...prevEvents];
       });
-
+      
       // Show an in-app alert for new event
       setNewEventAlert(processedEvent);
-
+      
       // Clear the alert after 5 seconds
       setTimeout(() => {
         setNewEventAlert(null);
       }, 5000);
-
+      
       // Play sound if enabled
       if (soundEnabled && !monitoringPaused) {
         try {
-          const audio = new Audio("/notification-sound.mp3");
+          const audio = new Audio('/notification-sound.mp3');
           audio.play();
         } catch (error) {
-          console.log("Sound playback failed:", error);
+          console.log('Sound playback failed:', error);
         }
       }
     }
@@ -239,7 +239,7 @@ function MobileMonitorDashboard({ newEvents = [], socketConnected = false }) {
 
       // Log to console
       console.log("Settings loaded from localStorage");
-
+      
       // No longer checking for notification permission
     } catch (error) {
       console.error("Error loading settings:", error);
@@ -278,48 +278,49 @@ function MobileMonitorDashboard({ newEvents = [], socketConnected = false }) {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* WebSocket Connection Status */}
-      <div
-        className={`fixed right-4 top-16 z-50 ${
-          socketConnected ? "bg-green-600" : "bg-red-600"
-        } text-white p-2 rounded-full shadow-lg flex items-center`}
+      {/* Test Button (development only) */}
+      <button
+        onClick={() => setShowTestNotifications(true)}
+        className="fixed right-4 bottom-20 z-50 bg-indigo-600 text-white p-2 rounded-full shadow-lg"
+        title="Test Notifications"
       >
+        <TestTube className="h-6 w-6" />
+      </button>
+      
+      {/* WebSocket Connection Status */}
+      <div className={`fixed right-4 top-16 z-50 ${socketConnected ? 'bg-green-600' : 'bg-red-600'} text-white p-2 rounded-full shadow-lg flex items-center`}>
         <Wifi className="h-4 w-4" />
-        <span className="sr-only">
-          {socketConnected ? "Connected" : "Disconnected"}
-        </span>
+        <span className="sr-only">{socketConnected ? 'Connected' : 'Disconnected'}</span>
       </div>
-
+      
       {/* New Event Alert */}
       {newEventAlert && (
         <div className="fixed inset-x-0 top-12 z-40 p-3 flex justify-center">
-          <div
-            className={`flex items-center space-x-2 p-3 rounded-lg ${
-              newEventAlert.event === "Bedside-Fall"
-                ? "bg-red-500"
-                : newEventAlert.event === "Attempted-Bed-Exit"
-                ? "bg-yellow-500"
-                : "bg-blue-500"
-            } text-white shadow-lg animate-pulse`}
+          <div className={`flex items-center space-x-2 p-3 rounded-lg ${
+            newEventAlert.event === "Bedside-Fall" ? "bg-red-500" : 
+            newEventAlert.event === "Attempted-Bed-Exit" ? "bg-yellow-500" : 
+            "bg-blue-500"
+          } text-white shadow-lg animate-pulse`}
           >
             <Bell className="h-5 w-5" />
             <div>
               <div className="font-medium">{newEventAlert.event}</div>
               <div className="text-sm">{newEventAlert.description}</div>
             </div>
-            <button
+            <button 
               onClick={() => {
                 setNewEventAlert(null);
                 setSelectedEvent(newEventAlert);
               }}
               className="bg-white/20 rounded-full p-1"
             >
-              <span className="sr-only">View</span>→
+              <span className="sr-only">View</span>
+              →
             </button>
           </div>
         </div>
       )}
-
+      
       {/* Header Sections */}
       <HeaderSection
         roomName={roomName}
@@ -979,6 +980,11 @@ function MobileMonitorDashboard({ newEvents = [], socketConnected = false }) {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Test Notifications Modal */}
+      {showTestNotifications && (
+        <TestNotifications onClose={() => setShowTestNotifications(false)} />
       )}
     </div>
   );
