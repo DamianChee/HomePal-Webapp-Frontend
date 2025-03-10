@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Moon, User, Edit2 } from "lucide-react";
-import { useMockEventGenerator } from "../utils/mockEventGenerator";
 
 /**
  * HeaderSection Component
@@ -19,61 +18,12 @@ import { useMockEventGenerator } from "../utils/mockEventGenerator";
  * @param {function} props.onEditRoom - Function to handle room edit
  */
 function HeaderSection({ roomName, onEditRoom }) {
-  // State to prevent multiple rapid clicks
-  const [isGenerating, setIsGenerating] = useState(false);
-  
-  // Get the mock event generator function
-  const generateMockEvent = useMockEventGenerator();
-  
-  /**
-   * Hidden feature: Generate a mock event when the logo is clicked
-   * 
-   * *** HOW TO REMOVE THIS FEATURE ***
-   * 1. Remove this entire handleLogoClick function
-   * 2. Remove the onClick attribute from the logo div
-   * 3. Remove the isGenerating state and setIsGenerating
-   * 4. Remove the import for useMockEventGenerator
-   */
-  const handleLogoClick = async () => {
-    if (isGenerating) return;
-    
-    setIsGenerating(true);
-    
-    try {
-      const result = await generateMockEvent();
-      
-      if (result.success) {
-        console.log("Mock event created successfully");
-      } else {
-        console.error("Failed to create mock event");
-      }
-    } catch (error) {
-      console.error("Error generating mock event:", error);
-    } finally {
-      // Prevent multiple rapid clicks
-      setTimeout(() => {
-        setIsGenerating(false);
-      }, 2000);
-    }
-  };
-
   return (
     <>
       {/* Brand Header */}
       <div className="bg-indigo-900 px-4 py-3">
         <div className="flex items-center space-x-2">
-          {/* 
-            * Hidden feature: This div is clickable and generates a mock event
-            * 
-            * To remove: Delete the onClick handler and style attributes below
-            * that make this look like a button (cursor-pointer)
-            */}
-          <div 
-            className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center cursor-pointer"
-            onClick={handleLogoClick}
-            style={{ transition: "all 0.2s ease" }}
-            title="CarePal Logo"
-          >
+          <div className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center">
             <Moon className="h-5 w-5 text-white" />
           </div>
           <div>

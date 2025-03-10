@@ -1,6 +1,6 @@
 {
-  "short_name": "HomePal",
-  "name": "HomePal Patient Monitoring",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,17 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#171923",
-  "background_color": "#171923",
-  "gcm_sender_id": "103953800507",
-  "orientation": "portrait",
-  "scope": "/",
-  "categories": ["healthcare", "monitoring"],
-  "shortcuts": [
-    {
-      "name": "Dashboard",
-      "url": "/"
-    }
-  ],
-  "description": "HomePal patient monitoring system for real-time healthcare alerts"
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
