@@ -9,6 +9,31 @@
  */
 
 /**
+ * Transform a Firestore event to the format expected by the app
+ * 
+ * @param {Object} firestoreEvent - Event object from Firestore
+ * @returns {Object} Transformed event object
+ */
+export const transformFirestoreEvent = (firestoreEvent) => {
+  // Handle Firestore timestamp
+  const eventTime = firestoreEvent.time?.toDate?.() || new Date(firestoreEvent.time);
+  const day = eventTime.getDate();
+  const month = eventTime.getMonth() + 1;
+  const year = eventTime.getFullYear();
+
+  return {
+    id: firestoreEvent.id || `event-${Date.now()}`,
+    time: eventTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    date: `${day}/${month}/${year}`,
+    event: firestoreEvent.action || firestoreEvent.event || 'Unknown Event',
+    status: firestoreEvent.status || 'normal',
+    description: firestoreEvent.description || firestoreEvent.action || 'Event detected',
+    timestamp: eventTime.getTime(),
+    rawData: firestoreEvent
+  };
+};
+
+/**
  * Get the CSS class for a status color based on the status string
  *
  * @param {string} status - The status string ('critical', 'warning', or 'normal')

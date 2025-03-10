@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, Bell, TestTube } from "lucide-react";
 
-// Import mock data
+// Import mock data and real data handlers
 import fetchEvents from "./mockData";
+import { requestNotificationPermission } from "../firebase";
+import TestNotifications from "./TestNotifications";
 
 // Import utility functions
 import {
@@ -11,6 +13,7 @@ import {
   calculatePauseEndTime,
   filterEvents,
   filterHistoryEvents,
+  transformFirestoreEvent,
 } from "./utils";
 
 import { getDateObject } from "../utils/dateFormatter";
@@ -38,8 +41,9 @@ import RoomSettingsModal from "./modals/RoomSettingsModal";
  * 6. Clear Code Organization: Logical grouping of related code
  * 7. Consistent Naming: Following React naming conventions
  * 8. Props API: Clear interfaces between components
+ * 9. Real-time Updates: Integration with Firebase for live event notifications
  */
-function MobileMonitorDashboard() {
+function MobileMonitorDashboard({ newEvents = [] }) {
   const fetchData = useFetch();
   const handleGetRecentEvents = async () => {
     try {
@@ -66,6 +70,9 @@ function MobileMonitorDashboard() {
     end: "06:00",
   });
   const [events, setEvents] = useState([]);
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission === 'granted');
+  const [showPermissionPrompt, setShowPermissionPrompt] = useState(Notification.permission === 'default');
+  const [newEventAlert, setNewEventAlert] = useState(null);
 
   const dateObject = getDateObject();
 
@@ -80,6 +87,7 @@ function MobileMonitorDashboard() {
   const [showHistory, setShowHistory] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showAlertSettings, setShowAlertSettings] = useState(false);
+  const [showTestNotifications, setShowTestNotifications] = useState(false);
 
   // Alert settings state
   const [alertSettings, setAlertSettings] = useState({
@@ -181,6 +189,55 @@ function MobileMonitorDashboard() {
     }
   }, [pauseEndTime]);
 
+  // Handle notification permission request
+  const handleRequestPermission = async () => {
+    const token = await requestNotificationPermission();
+    setNotificationPermission(!!token);
+    setShowPermissionPrompt(false);
+    
+    // Save to localStorage to remember user's choice
+    localStorage.setItem("notificationPermissionRequested", "true");
+  };
+  
+  // Process incoming real-time events
+  useEffect(() => {
+    if (newEvents.length > 0) {
+      // Process the latest event
+      const latestEvent = newEvents[0];
+      
+      // Transform to app format if needed
+      const processedEvent = transformFirestoreEvent(latestEvent);
+      
+      // Add to events list without duplicates
+      setEvents(prevEvents => {
+        // Check if event already exists
+        const exists = prevEvents.some(e => e.id === processedEvent.id);
+        if (exists) return prevEvents;
+        
+        // Add new event at the beginning
+        return [processedEvent, ...prevEvents];
+      });
+      
+      // Show an in-app alert for new event
+      setNewEventAlert(processedEvent);
+      
+      // Clear the alert after 5 seconds
+      setTimeout(() => {
+        setNewEventAlert(null);
+      }, 5000);
+      
+      // Play sound if enabled
+      if (soundEnabled && !monitoringPaused) {
+        try {
+          const audio = new Audio('/notification-sound.mp3');
+          audio.play();
+        } catch (error) {
+          console.log('Sound playback failed:', error);
+        }
+      }
+    }
+  }, [newEvents, soundEnabled, monitoringPaused]);
+
   // Load saved settings on component mount
   useEffect(() => {
     try {
@@ -193,6 +250,12 @@ function MobileMonitorDashboard() {
 
       // Log to console
       console.log("Settings loaded from localStorage");
+      
+      // Check if notification permission was already requested
+      const permissionRequested = localStorage.getItem("notificationPermissionRequested");
+      if (permissionRequested) {
+        setShowPermissionPrompt(false);
+      }
     } catch (error) {
       console.error("Error loading settings:", error);
     }
@@ -230,6 +293,69 @@ function MobileMonitorDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      {/* Test Button (development only) */}
+      <button
+        onClick={() => setShowTestNotifications(true)}
+        className="fixed right-4 bottom-20 z-50 bg-indigo-600 text-white p-2 rounded-full shadow-lg"
+        title="Test Notifications"
+      >
+        <TestTube className="h-6 w-6" />
+      </button>
+      
+      {/* Notification Permission Prompt */}
+      {showPermissionPrompt && (
+        <div className="fixed inset-x-0 top-0 z-50 bg-blue-600 p-3 flex items-center justify-between">
+          <div className="text-white text-sm">
+            Enable notifications to receive alerts when events occur
+          </div>
+          <div className="flex space-x-2">
+            <button 
+              onClick={handleRequestPermission}
+              className="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium"
+            >
+              Allow
+            </button>
+            <button 
+              onClick={() => {
+                setShowPermissionPrompt(false);
+                localStorage.setItem("notificationPermissionRequested", "true");
+              }}
+              className="text-white text-sm"
+            >
+              Later
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* New Event Alert */}
+      {newEventAlert && (
+        <div className="fixed inset-x-0 top-12 z-40 p-3 flex justify-center">
+          <div className={`flex items-center space-x-2 p-3 rounded-lg ${
+            newEventAlert.event === "Bedside-Fall" ? "bg-red-500" : 
+            newEventAlert.event === "Attempted-Bed-Exit" ? "bg-yellow-500" : 
+            "bg-blue-500"
+          } text-white shadow-lg animate-pulse`}
+          >
+            <Bell className="h-5 w-5" />
+            <div>
+              <div className="font-medium">{newEventAlert.event}</div>
+              <div className="text-sm">{newEventAlert.description}</div>
+            </div>
+            <button 
+              onClick={() => {
+                setNewEventAlert(null);
+                setSelectedEvent(newEventAlert);
+              }}
+              className="bg-white/20 rounded-full p-1"
+            >
+              <span className="sr-only">View</span>
+              →
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Header Sections */}
       <HeaderSection
         roomName={roomName}
@@ -889,6 +1015,11 @@ function MobileMonitorDashboard() {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Test Notifications Modal */}
+      {showTestNotifications && (
+        <TestNotifications onClose={() => setShowTestNotifications(false)} />
       )}
     </div>
   );
