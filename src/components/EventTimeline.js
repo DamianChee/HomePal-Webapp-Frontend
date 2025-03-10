@@ -132,7 +132,8 @@ function EventTimeline({
             return (
               <DateEvents
                 key={date}
-                date={getDisplayDate(date)}
+                day={getDisplayDate(date)}
+                date={date}
                 filteredEvents={filteredEvents}
                 isExpanded={expandedDates.includes(date)}
                 onToggleExpand={onToggleExpand}
