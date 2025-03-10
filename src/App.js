@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import useFetch from "./hooks/useFetch";
 import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
-import InAppNotification from "./components/InAppNotification";
 import { 
   requestNotificationPermission, 
   setupMessageListener, 
   subscribeToEvents,
   checkNotificationSupport,
-  showNotification,
-  registerEventCallback,
-  unregisterEventCallback
+  showNotification
 } from "./firebase";
 
 /**
@@ -25,7 +22,7 @@ import {
  * 2. Firebase connectivity available in the background
  * 3. Uses modern React practices (hooks, functional components)
  * 4. Real-time event notifications from Firestore
- * 5. Universal fallback notifications for all platforms
+ * 5. Push notifications via Firebase Cloud Messaging
  */
 function App() {
   console.log("[App] Component rendering...");
@@ -35,17 +32,8 @@ function App() {
   const [notificationPermission, setNotificationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [appReady, setAppReady] = useState(false);
-  
-  // State for in-app notifications (iOS fallback)
-  const [notification, setNotification] = useState(null);
-  
-  // Notification callback for platforms without native notifications
-  const handleNotification = useCallback((notificationData) => {
-    console.log("[App] In-app notification triggered:", notificationData);
-    setNotification(notificationData);
-  }, []);
-  
+  const [appReady, setAppReady] = useState(false); // Added safety flag
+
   const handleGetAPIStatus = async () => {
     console.log("[App] Checking API status...");
     try {
@@ -104,33 +92,18 @@ function App() {
     try {
       setNewEvents(prevEvents => [event, ...prevEvents]);
       
-      // Try to show a notification - no need to check here as 
-      // showNotification will handle that internally and call our callback
-      // if native notifications aren't available
-      showNotification(
-        'HomePal Alert', 
-        `New event: ${event.action || 'Event detected'}`
-      );
+      // Try to show a notification if supported
+      if (checkNotificationSupport()) {
+        showNotification(
+          'HomePal Alert', 
+          `New event: ${event.action || 'Event detected'}`
+        );
+      }
     } catch (error) {
       console.error('[App] Error handling new event:', error);
-      // Even if notification fails, still show in-app notification
-      handleNotification({ 
-        title: 'HomePal Alert', 
-        body: `New event: ${event.action || 'Event detected'}` 
-      });
+      // Continue app execution even if notification fails
     }
   };
-
-  // Register the in-app notification callback
-  useEffect(() => {
-    // Register for fallback notifications
-    registerEventCallback(handleNotification);
-    
-    // Cleanup on unmount
-    return () => {
-      unregisterEventCallback(handleNotification);
-    };
-  }, [handleNotification]);
 
   // Setup notification permission and Firebase listeners
   useEffect(() => {
@@ -140,30 +113,25 @@ function App() {
     const setupNotifications = async () => {
       console.log("[App] Setting up notifications...");
       try {
-        // Check if notifications are supported - but proceed anyway
-        // as we'll use fallback for unsupported platforms
-        const supported = checkNotificationSupport();
-        console.log("[App] Notification API supported:", supported);
-        
-        // Try to request permission if supported
-        let permission = false;
-        if (supported) {
-          permission = await requestNotificationPermission();
-          setNotificationPermission(permission);
-          console.log("[App] Notification permission:", permission);
-          
-          if (permission) {
-            // Setup foreground message listener
-            setupMessageListener();
-          }
-        } else {
-          console.log("[App] Using fallback notifications only");
+        // Check if notifications are supported first
+        if (!checkNotificationSupport()) {
+          console.log("[App] Notifications not supported in this browser");
+          return false;
         }
         
-        return true; // Return success even if permissions denied, we'll use fallback
+        const token = await requestNotificationPermission();
+        setNotificationPermission(!!token);
+        console.log("[App] Notification permission:", !!token);
+        
+        if (token) {
+          // Setup foreground message listener
+          setupMessageListener();
+          console.log("[App] Message listener set up");
+        }
+        return !!token;
       } catch (error) {
         console.error("[App] Failed to setup notifications:", error);
-        return true; // Still return success, we'll use fallback
+        return false;
       }
     };
     
@@ -179,11 +147,12 @@ function App() {
         
         // 1. Setup notification permission (non-critical)
         console.log("[App] Setting up notifications...");
-        await setupNotifications()
+        const notificationsReady = await setupNotifications()
           .catch(err => {
             console.warn('[App] Notification setup failed:', err);
-            // Continue anyway, we have fallback
+            return false;
           });
+        console.log("[App] Notifications ready:", notificationsReady);
         
         // 2. Verify backend connectivity (more critical)
         console.log("[App] Checking API status...");
@@ -253,22 +222,11 @@ function App() {
     };
   }, []);
 
-  // Handle clearing notification
-  const handleCloseNotification = () => {
-    setNotification(null);
-  };
-
   console.log("[App] Current state - isLoading:", isLoading, "hasError:", hasError, "appReady:", appReady);
 
+  // Display MobileMonitorDashboard as the main view only when ready
   return (
     <div className="App">
-      {/* In-app notification component - works on all platforms */}
-      <InAppNotification 
-        notification={notification} 
-        onClose={handleCloseNotification}
-        autoHideDuration={5000}
-      />
-      
       {isLoading ? (
         <div className="loading-screen">
           <div className="spinner"></div>

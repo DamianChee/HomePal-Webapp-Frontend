@@ -26,9 +26,6 @@ let db = null;
 let messaging = null;
 let auth = null;
 
-// Event callback collection - we'll use this for fallback notifications
-let eventCallbacks = [];
-
 try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
@@ -38,45 +35,54 @@ try {
   console.error("[Firebase.js] Firebase initialization failed:", error);
 }
 
-// Check if notifications are supported - SAFELY, no exceptions thrown
+// Check if notifications are supported in this browser
 const checkNotificationSupport = () => {
   try {
-    // First check if window exists (we're in a browser)
-    if (typeof window === 'undefined') return false;
-    
-    // Then check if the Notification API exists
-    return 'Notification' in window;
+    return (
+      typeof window !== 'undefined' && 
+      'Notification' in window
+    );
   } catch (error) {
     console.warn('[Firebase] Notification API check failed:', error);
     return false;
   }
 };
 
-// Register a callback function for fallback notifications
-const registerEventCallback = (callback) => {
-  if (typeof callback === 'function') {
-    eventCallbacks.push(callback);
-    return true;
-  }
-  return false;
-};
-
-// Unregister a callback
-const unregisterEventCallback = (callback) => {
-  eventCallbacks = eventCallbacks.filter(cb => cb !== callback);
-};
-
 // Safely check notification permission without throwing errors
 const getNotificationPermission = () => {
   try {
-    // First check if notifications are supported
     if (!checkNotificationSupport()) return 'denied';
-    
-    // Then try to access the permission property
     return Notification.permission;
   } catch (error) {
     console.warn('[Firebase] Failed to get notification permission:', error);
     return 'denied';
+  }
+};
+
+// Safely request notification permission
+const safeRequestNotificationPermission = async () => {
+  if (!checkNotificationSupport()) {
+    console.log('[Firebase] Notifications not supported in this browser');
+    return 'denied';
+  }
+  
+  try {
+    // Modern promise-based API
+    return await Notification.requestPermission();
+  } catch (error) {
+    // Fallback for older browsers that use callback pattern
+    console.warn('[Firebase] Error with promise-based permission request:', error);
+    
+    return new Promise((resolve) => {
+      try {
+        Notification.requestPermission((result) => {
+          resolve(result);
+        });
+      } catch (fallbackError) {
+        console.error('[Firebase] Notification permission completely failed:', fallbackError);
+        resolve('denied');
+      }
+    });
   }
 };
 
@@ -94,86 +100,93 @@ const initializeFCM = () => {
   return false;
 };
 
-// Request permission - returns true if granted, false otherwise
-// This function is guaranteed not to throw an exception
+// Request permission and get FCM token - without VAPID key
 const requestNotificationPermission = async () => {
   console.log("[Firebase] Starting notification permission request...");
   
   try {
-    // Skip if notifications are not supported
-    if (!checkNotificationSupport()) {
-      console.log("[Firebase] Notification API not supported in this browser");
-      return false;
+    // Initialize FCM if not already done
+    if (!messaging && !initializeFCM()) {
+      console.log("[Firebase] FCM not supported or failed to initialize");
+      return null;
     }
 
-    // Try to request permission
+    // Check if notification API is supported
+    if (!checkNotificationSupport()) {
+      console.log("[Firebase] Notification API not supported in this browser");
+      return null;
+    }
+
+    // Request permission safely
+    const permission = await safeRequestNotificationPermission();
+    console.log("[Firebase] Notification permission result:", permission);
+
+    if (permission !== "granted") {
+      console.log("[Firebase] Notification permission not granted");
+      return null;
+    }
+
     try {
-      const permission = await Notification.requestPermission();
-      return permission === "granted";
-    } catch (error) {
-      console.warn("[Firebase] Error requesting notification permission:", error);
-      return false;
+      // Get FCM token without VAPID key
+      console.log("[Firebase] Requesting FCM token...");
+      const currentToken = await getToken(messaging);
+      
+      if (currentToken) {
+        console.log("[Firebase] FCM token received");
+        return currentToken;
+      } else {
+        console.log("[Firebase] No FCM token available");
+        return null;
+      }
+    } catch (tokenError) {
+      console.error("[Firebase] Error getting FCM token:", tokenError);
+      return null;
     }
   } catch (error) {
     console.error("[Firebase] Error in requestNotificationPermission:", error);
-    return false;
+    return null;
   }
 };
 
 // Safely create and show a notification
-// Uses both native notifications AND fallback in-app notifications
 const showNotification = (title, body, icon = "/logo192.png") => {
-  console.log("[Firebase] Showing notification:", title, body);
-  
-  // Try native notifications first
-  let nativeNotificationShown = false;
-  
   try {
-    if (checkNotificationSupport() && getNotificationPermission() === "granted") {
-      const notification = new Notification(title, { body, icon });
-      
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
-      
-      nativeNotificationShown = true;
-      console.log("[Firebase] Native notification shown");
+    if (!checkNotificationSupport()) {
+      console.log("[Firebase] Cannot show notification - not supported");
+      return false;
     }
+    
+    if (getNotificationPermission() !== "granted") {
+      console.log("[Firebase] Cannot show notification - permission not granted");
+      return false;
+    }
+    
+    const notification = new Notification(title, { body, icon });
+    
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+    
+    return true;
   } catch (error) {
-    console.warn("[Firebase] Native notification failed:", error);
-    nativeNotificationShown = false;
+    console.error("[Firebase] Error showing notification:", error);
+    return false;
   }
-  
-  // Always trigger fallback in-app notifications via callbacks
-  try {
-    eventCallbacks.forEach(callback => {
-      try {
-        callback({ title, body, icon });
-      } catch (cbError) {
-        console.error("[Firebase] Error in notification callback:", cbError);
-      }
-    });
-  } catch (error) {
-    console.error("[Firebase] Error showing fallback notification:", error);
-  }
-  
-  return nativeNotificationShown;
 };
 
 // Listen for messages when app is in foreground
 const setupMessageListener = () => {
-  try {
-    // Skip if messaging is not available
-    if (!messaging) {
-      console.log("[Firebase] Message listener setup failed - messaging not initialized");
-      return;
-    }
+  if (!messaging) {
+    console.log("[Firebase] Message listener setup failed - messaging not initialized");
+    return;
+  }
 
+  try {
     onMessage(messaging, (payload) => {
       console.log("[Firebase] Message received in foreground:", payload);
 
-      // Display a notification when a message arrives
+      // Display a notification even when in foreground
       if (payload.notification) {
         const { title, body } = payload.notification;
         showNotification(title, body);
@@ -188,7 +201,7 @@ const setupMessageListener = () => {
 // Setup a listener for new events in Firestore with error handling
 const subscribeToEvents = (onEventAdded) => {
   try {
-    // Skip if Firestore is not available
+    // Check if Firestore is available
     if (!db) {
       console.warn(
         "[Firebase] Firestore not initialized, skipping event subscription"
@@ -196,15 +209,14 @@ const subscribeToEvents = (onEventAdded) => {
       return () => {}; // Return empty unsubscribe function
     }
 
-    console.log("[Firebase] Setting up Firestore event subscription...");
-    
-    // Define the query
     const eventsRef = collection(db, "events");
     const recentEventsQuery = query(
       eventsRef,
       orderBy("time", "desc"),
       limit(20)
     );
+
+    console.log("[Firebase] Setting up Firestore event subscription...");
     
     // Listen for real-time updates with error handling
     return onSnapshot(
@@ -228,22 +240,18 @@ const subscribeToEvents = (onEventAdded) => {
               // Only trigger for events that are less than 60 seconds old
               if (timeDiffInSeconds < 60) {
                 console.log("[Firebase] New event detected:", newEvent);
+                onEventAdded(newEvent);
                 
-                // Call the provided callback
-                try {
-                  onEventAdded(newEvent);
-                } catch (cbError) {
-                  console.error("[Firebase] Error in event callback:", cbError);
-                }
-                
-                // Also show a notification
-                try {
-                  showNotification(
-                    "New HomePal Event", 
-                    `Event: ${newEvent.action || 'New event detected'}`
-                  );
-                } catch (notifError) {
-                  console.error("[Firebase] Error showing notification:", notifError);
+                // Also try to show a notification directly
+                if (checkNotificationSupport() && getNotificationPermission() === "granted") {
+                  try {
+                    showNotification(
+                      "New HomePal Event", 
+                      `Event: ${newEvent.action || 'New event detected'}`
+                    );
+                  } catch (notifError) {
+                    console.error("[Firebase] Error showing direct notification:", notifError);
+                  }
                 }
               }
             }
@@ -310,6 +318,4 @@ export {
   subscribeToEvents,
   createMockEvent,
   showNotification,
-  registerEventCallback,
-  unregisterEventCallback,
 };
