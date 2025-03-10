@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Moon, User, Edit2 } from "lucide-react";
 import { useMockEventGenerator } from "../utils/mockEventGenerator";
+import { createDirectMockEvent } from "../utils/testDirectBackend";
 
 /**
  * HeaderSection Component
@@ -35,20 +36,40 @@ function HeaderSection({ roomName, onEditRoom }) {
    * 4. Remove the import for useMockEventGenerator
    */
   const handleLogoClick = async () => {
-    if (isGenerating) return;
+    console.log("Logo clicked!"); // Debug: Check if click is detected
+    
+    if (isGenerating) {
+      console.log("Already generating event, please wait..."); // Debug: Check if we're blocking
+      return;
+    }
     
     setIsGenerating(true);
     
     try {
+      // Try the direct approach first
+      console.log("Trying direct API call");
+      const directSuccess = await createDirectMockEvent();
+      
+      if (directSuccess) {
+        console.log("Direct mock event created successfully");
+        alert("Mock event created successfully!");
+        return;
+      }
+      
+      // Fall back to the original approach if direct fails
+      console.log("Direct approach failed, trying with hook");
       const result = await generateMockEvent();
       
       if (result.success) {
         console.log("Mock event created successfully");
+        alert("Mock event created successfully!");
       } else {
-        console.error("Failed to create mock event");
+        console.error("Failed to create mock event", result.error);
+        alert("Failed to create mock event. Check console for details.");
       }
     } catch (error) {
       console.error("Error generating mock event:", error);
+      alert("Error generating mock event: " + error.message);
     } finally {
       // Prevent multiple rapid clicks
       setTimeout(() => {
@@ -69,10 +90,12 @@ function HeaderSection({ roomName, onEditRoom }) {
             * that make this look like a button (cursor-pointer)
             */}
           <div 
-            className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center cursor-pointer"
+            className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
             onClick={handleLogoClick}
             style={{ transition: "all 0.2s ease" }}
-            title="CarePal Logo"
+            title="Click to generate mock event"
+            role="button"
+            aria-label="Generate mock event"
           >
             <Moon className="h-5 w-5 text-white" />
           </div>
