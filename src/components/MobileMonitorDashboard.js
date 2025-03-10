@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, ArrowLeft, Bell, TestTube } from "lucide-react";
+import { X, ArrowLeft, Bell, TestTube, Wifi } from "lucide-react";
 
 // Import mock data and real data handlers
 import fetchEvents from "./mockData";
-import { requestNotificationPermission } from "../firebase";
 import TestNotifications from "./TestNotifications";
 
 // Import utility functions
@@ -41,9 +40,9 @@ import RoomSettingsModal from "./modals/RoomSettingsModal";
  * 6. Clear Code Organization: Logical grouping of related code
  * 7. Consistent Naming: Following React naming conventions
  * 8. Props API: Clear interfaces between components
- * 9. Real-time Updates: Integration with Firebase for live event notifications
+ * 9. Real-time Updates: Integration with WebSockets for live event notifications
  */
-function MobileMonitorDashboard({ newEvents = [] }) {
+function MobileMonitorDashboard({ newEvents = [], socketConnected = false }) {
   const fetchData = useFetch();
   const handleGetRecentEvents = async () => {
     try {
@@ -70,8 +69,6 @@ function MobileMonitorDashboard({ newEvents = [] }) {
     end: "06:00",
   });
   const [events, setEvents] = useState([]);
-  const [notificationPermission, setNotificationPermission] = useState(Notification.permission === 'granted');
-  const [showPermissionPrompt, setShowPermissionPrompt] = useState(Notification.permission === 'default');
   const [newEventAlert, setNewEventAlert] = useState(null);
 
   const dateObject = getDateObject();
@@ -189,15 +186,7 @@ function MobileMonitorDashboard({ newEvents = [] }) {
     }
   }, [pauseEndTime]);
 
-  // Handle notification permission request
-  const handleRequestPermission = async () => {
-    const token = await requestNotificationPermission();
-    setNotificationPermission(!!token);
-    setShowPermissionPrompt(false);
-    
-    // Save to localStorage to remember user's choice
-    localStorage.setItem("notificationPermissionRequested", "true");
-  };
+  // WebSocket status is now passed as prop (socketConnected)
   
   // Process incoming real-time events
   useEffect(() => {
@@ -251,11 +240,7 @@ function MobileMonitorDashboard({ newEvents = [] }) {
       // Log to console
       console.log("Settings loaded from localStorage");
       
-      // Check if notification permission was already requested
-      const permissionRequested = localStorage.getItem("notificationPermissionRequested");
-      if (permissionRequested) {
-        setShowPermissionPrompt(false);
-      }
+      // No longer checking for notification permission
     } catch (error) {
       console.error("Error loading settings:", error);
     }
@@ -302,31 +287,11 @@ function MobileMonitorDashboard({ newEvents = [] }) {
         <TestTube className="h-6 w-6" />
       </button>
       
-      {/* Notification Permission Prompt */}
-      {showPermissionPrompt && (
-        <div className="fixed inset-x-0 top-0 z-50 bg-blue-600 p-3 flex items-center justify-between">
-          <div className="text-white text-sm">
-            Enable notifications to receive alerts when events occur
-          </div>
-          <div className="flex space-x-2">
-            <button 
-              onClick={handleRequestPermission}
-              className="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium"
-            >
-              Allow
-            </button>
-            <button 
-              onClick={() => {
-                setShowPermissionPrompt(false);
-                localStorage.setItem("notificationPermissionRequested", "true");
-              }}
-              className="text-white text-sm"
-            >
-              Later
-            </button>
-          </div>
-        </div>
-      )}
+      {/* WebSocket Connection Status */}
+      <div className={`fixed right-4 top-16 z-50 ${socketConnected ? 'bg-green-600' : 'bg-red-600'} text-white p-2 rounded-full shadow-lg flex items-center`}>
+        <Wifi className="h-4 w-4" />
+        <span className="sr-only">{socketConnected ? 'Connected' : 'Disconnected'}</span>
+      </div>
       
       {/* New Event Alert */}
       {newEventAlert && (
