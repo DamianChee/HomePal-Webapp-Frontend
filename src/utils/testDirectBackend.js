@@ -22,7 +22,7 @@ export const createDirectMockEvent = async () => {
     
     // Get the backend URL from env or use a fallback
     const backendUrl = process.env.REACT_APP_BACKEND_DOMAIN || '';
-    const apiUrl = `${backendUrl}/events`;
+    const apiUrl = `${backendUrl}/events/new`;
     
     // Log attempt
     console.log('Attempting direct API call to:', apiUrl);
