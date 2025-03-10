@@ -89,6 +89,18 @@ function EventTimeline({
         <div className="divide-y divide-gray-700">
           {/* Group events by date */}
           {[today, yesterday].map((date) => {
+            // Helper function to convert date to readable format
+            const getDisplayDate = (d) => {
+              const today = new Date();
+              const yesterday = new Date(today);
+              yesterday.setDate(yesterday.getDate() - 1);
+
+              if (d.toDateString() === today.toDateString()) return "Today";
+              if (d.toDateString() === yesterday.toDateString())
+                return "Yesterday";
+              return d.toLocaleDateString(); // Fallback for other dates
+            };
+
             // Get filtered events for this date
             const filteredEvents = events
               .filter((event) => event.date === date)
@@ -126,7 +138,7 @@ function EventTimeline({
             return (
               <DateEvents
                 key={date}
-                date={date}
+                date={getDisplayDate(date)}
                 filteredEvents={filteredEvents}
                 isExpanded={expandedDates.includes(date)}
                 onToggleExpand={onToggleExpand}
