@@ -32,11 +32,11 @@ export const createMockEvent = async (fetchFn) => {
     };
 
     console.log("Sending mock event:", mockEvent);
-    console.log("Backend URL:", process.env.REACT_APP_BACKEND_DOMAIN + "/events/new"); // Debug
+    console.log("Backend URL:", process.env.REACT_APP_BACKEND_DOMAIN + "/events"); // Debug
     
     // Add direct fetch as backup to check if useFetch is the issue
     try {
-      const directResponse = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + "/events/new", {
+      const directResponse = await fetch(process.env.REACT_APP_BACKEND_DOMAIN + "/events", {
         method: "POST",
         headers: {
           "Accept": "application/json",
@@ -59,7 +59,7 @@ export const createMockEvent = async (fetchFn) => {
     
     // Send the mock event to the backend using the provided fetch function
     console.log("Trying with fetchFn");
-    const result = await fetchFn("/events/new", "POST", mockEvent);
+    const result = await fetchFn("/events", "POST", mockEvent);
     console.log("fetchFn result:", result);
     
     if (result.ok) {
