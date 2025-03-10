@@ -23,70 +23,70 @@ import {
  * 5. Push notifications via Firebase Cloud Messaging
  */
 function App() {
-  console.log("[App] Component rendering...");
-  
   const fetchData = useFetch();
   const [newEvents, setNewEvents] = useState([]);
   const [notificationPermission, setNotificationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [appReady, setAppReady] = useState(false); // Added safety flag
 
   const handleGetAPIStatus = async () => {
-    console.log("[App] Checking API status...");
     try {
       const res = await fetchData("/api/status", "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log("[App] API status response:", res.data.response);
+      console.log(res.data.response);
       return true;
     } catch (error) {
-      console.error(`[App] API status check failed:`, error.message);
+      console.error(`[handleGetAPIStatus] Error has occurred:`, error.message);
       return false;
     }
   };
 
   const handleGetAllEvents = async () => {
-    console.log("[App] Getting all events...");
     try {
       const res = await fetchData("/events", "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log("[App] All events retrieved");
+      console.log(res.data.response);
       return res.data.response;
     } catch (error) {
-      console.error(`[App] Failed to get all events:`, error.message);
+      console.error(`[handleGetAllEvents] Error has occurred:`, error.message);
       return [];
     }
   };
 
   const handleGetLatestEvents = async () => {
-    console.log("[App] Getting latest events...");
     try {
+      // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/latest`, "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log("[App] Latest events retrieved");
+      console.log(res.data.response);
       return res.data.response;
     } catch (error) {
-      console.error(`[App] Failed to get latest events:`, error.message);
+      console.error(
+        `[handleGetLatestEvents] Error has occurred:`,
+        error.message
+      );
       return [];
     }
   };
 
   const handleGetRecentEvents = async () => {
-    console.log("[App] Getting recent events...");
     try {
+      // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
-      console.log("[App] Recent events retrieved");
+      console.log(res.data.response);
       return res.data.response;
     } catch (error) {
-      console.error(`[App] Failed to get recent events:`, error.message);
+      console.error(
+        `[handleGetRecentEvents] Error has occurred:`,
+        error.message
+      );
       return [];
     }
   };
 
   // Handle new event received from Firestore
   const handleNewEvent = (event) => {
-    console.log("[App] New event received:", event);
     try {
       setNewEvents(prevEvents => [event, ...prevEvents]);
       
@@ -105,38 +105,31 @@ function App() {
         };
       }
     } catch (error) {
-      console.error('[App] Error handling new event:', error);
+      console.error('Error handling new event:', error);
       // Continue app execution even if notification fails
     }
   };
 
   // Setup notification permission and Firebase listeners
   useEffect(() => {
-    console.log("[App] Main useEffect running...");
-    
     // Setup notification permission with error handling
     const setupNotifications = async () => {
-      console.log("[App] Setting up notifications...");
       try {
         const token = await requestNotificationPermission();
         setNotificationPermission(!!token);
-        console.log("[App] Notification permission:", !!token);
         
         if (token) {
           // Setup foreground message listener
           setupMessageListener();
-          console.log("[App] Message listener set up");
         }
-        return !!token;
       } catch (error) {
-        console.error("[App] Failed to setup notifications:", error);
-        return false;
+        console.error("Failed to setup notifications:", error);
+        // Continue app execution even if notifications fail
       }
     };
     
     // Initialize all services
     const initializeApp = async () => {
-      console.log("[App] Initializing app...");
       setIsLoading(true);
       setHasError(false);
       
@@ -145,58 +138,32 @@ function App() {
         let unsubscribe = () => {};
         
         // 1. Setup notification permission (non-critical)
-        console.log("[App] Setting up notifications...");
-        const notificationsReady = await setupNotifications()
-          .catch(err => {
-            console.warn('[App] Notification setup failed:', err);
-            return false;
-          });
-        console.log("[App] Notifications ready:", notificationsReady);
+        await setupNotifications().catch(err => console.warn('Notification setup failed:', err));
         
         // 2. Verify backend connectivity (more critical)
-        console.log("[App] Checking API status...");
-        const apiStatus = await handleGetAPIStatus()
-          .catch(err => {
-            console.warn('[App] API status check failed:', err);
-            return false;
-          });
-        console.log("[App] API status:", apiStatus ? "Connected" : "Disconnected");
+        const apiStatus = await handleGetAPIStatus().catch(() => false);
         
         // 3. Subscribe to Firestore events (handle errors internally)
-        console.log("[App] Setting up Firestore listeners...");
         try {
           unsubscribe = subscribeToEvents(handleNewEvent) || (() => {});
-          console.log("[App] Firestore listeners set up successfully");
         } catch (firestoreError) {
-          console.error("[App] Failed to subscribe to Firestore events:", firestoreError);
+          console.error("Failed to subscribe to Firestore events:", firestoreError);
           // App can still function without real-time updates
         }
         
-        // Instead of immediately setting loading to false, we use a slight delay
-        // This gives time for any React state updates to propagate
-        console.log("[App] App initialization complete, preparing to render main content...");
-        setTimeout(() => {
-          console.log("[App] Setting loading state to false");
-          setIsLoading(false);
-          // Set app to ready after ensuring loading is complete
-          setAppReady(true);
-          console.log("[App] App is now ready");
-        }, 500); // Short delay to ensure state updates are processed
+        // Set loading state
+        setIsLoading(false);
         
         // Return cleanup function
         return () => {
-          console.log("[App] Running cleanup function");
           try {
-            if (unsubscribe) {
-              unsubscribe();
-              console.log("[App] Unsubscribed from Firestore");
-            }
+            if (unsubscribe) unsubscribe();
           } catch (cleanupError) {
-            console.error("[App] Cleanup error:", cleanupError);
+            console.error("Cleanup error:", cleanupError);
           }
         };
       } catch (error) {
-        console.error("[App] Failed to initialize app:", error);
+        console.error("Failed to initialize app:", error);
         setIsLoading(false);
         setHasError(true);
         return () => {}; // Empty cleanup function
@@ -204,33 +171,28 @@ function App() {
     };
     
     // Initialize app and store cleanup function
-    console.log("[App] Starting app initialization...");
     const cleanup = initializeApp();
     
     // Return cleanup function for useEffect
     return () => {
-      console.log("[App] Component unmounting, running cleanup...");
       cleanup.then(cleanupFn => {
         try {
           cleanupFn();
-          console.log("[App] Cleanup completed");
         } catch (error) {
-          console.error("[App] Error during cleanup:", error);
+          console.error("Error during cleanup:", error);
         }
       });
     };
   }, []);
 
-  console.log("[App] Current state - isLoading:", isLoading, "hasError:", hasError, "appReady:", appReady);
-
-  // Display MobileMonitorDashboard as the main view only when ready
+  // Display MobileMonitorDashboard as the main view
+  // Pass new events from real-time listeners
   return (
     <div className="App">
       {isLoading ? (
         <div className="loading-screen">
           <div className="spinner"></div>
           <p>Loading HomePal...</p>
-          <p className="debug-info">Please wait while we connect to services</p>
         </div>
       ) : hasError ? (
         <div className="error-screen">
@@ -239,9 +201,7 @@ function App() {
           <button onClick={() => window.location.reload()}>Retry</button>
         </div>
       ) : (
-        <div className="dashboard-container">
-          <MobileMonitorDashboard newEvents={newEvents} />
-        </div>
+        <MobileMonitorDashboard newEvents={newEvents} />
       )}
     </div>
   );
