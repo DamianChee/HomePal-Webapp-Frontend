@@ -90,16 +90,9 @@ function EventTimeline({
           {/* Group events by date */}
           {[today, yesterday].map((date) => {
             // Helper function to convert date to readable format
-            const getDisplayDate = (d) => {
-              const today = new Date();
-              const yesterday = new Date(today);
-              yesterday.setDate(yesterday.getDate() - 1);
-              console.log(d);
-              console.log(today);
-
-              if (d === today.toDateString()) return "Today";
-              if (d === yesterday.toDateString()) return "Yesterday";
-              return d.toLocaleDateString(); // Fallback for other dates
+            const getDisplayDate = (date) => {
+              if (date === today) return "Today";
+              if (date === yesterday) return "Yesterday";
             };
 
             // Get filtered events for this date
