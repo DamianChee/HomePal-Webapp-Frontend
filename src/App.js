@@ -5,9 +5,7 @@ import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 import { 
   requestNotificationPermission, 
   setupMessageListener, 
-  subscribeToEvents,
-  checkNotificationSupport,
-  showNotification
+  subscribeToEvents 
 } from "./firebase";
 
 /**
@@ -92,12 +90,19 @@ function App() {
     try {
       setNewEvents(prevEvents => [event, ...prevEvents]);
       
-      // Try to show a notification if supported
-      if (checkNotificationSupport()) {
-        showNotification(
-          'HomePal Alert', 
-          `New event: ${event.action || 'Event detected'}`
-        );
+      // Show browser notification if permission granted and app is visible
+      if (Notification.permission === 'granted' && document.visibilityState === 'visible') {
+        // Create and show a notification using the Web Notifications API
+        const notification = new Notification('HomePal Alert', {
+          body: `New event: ${event.action || 'Event detected'}`,
+          icon: '/logo192.png'
+        });
+        
+        // Focus the window when notification is clicked
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
       }
     } catch (error) {
       console.error('[App] Error handling new event:', error);
@@ -113,12 +118,6 @@ function App() {
     const setupNotifications = async () => {
       console.log("[App] Setting up notifications...");
       try {
-        // Check if notifications are supported first
-        if (!checkNotificationSupport()) {
-          console.log("[App] Notifications not supported in this browser");
-          return false;
-        }
-        
         const token = await requestNotificationPermission();
         setNotificationPermission(!!token);
         console.log("[App] Notification permission:", !!token);

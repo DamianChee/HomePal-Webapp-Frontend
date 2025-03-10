@@ -35,167 +35,72 @@ try {
   console.error("[Firebase.js] Firebase initialization failed:", error);
 }
 
-// Check if notifications are supported in this browser
-const checkNotificationSupport = () => {
-  try {
-    return (
-      typeof window !== 'undefined' && 
-      'Notification' in window
-    );
-  } catch (error) {
-    console.warn('[Firebase] Notification API check failed:', error);
-    return false;
-  }
-};
-
-// Safely check notification permission without throwing errors
-const getNotificationPermission = () => {
-  try {
-    if (!checkNotificationSupport()) return 'denied';
-    return Notification.permission;
-  } catch (error) {
-    console.warn('[Firebase] Failed to get notification permission:', error);
-    return 'denied';
-  }
-};
-
-// Safely request notification permission
-const safeRequestNotificationPermission = async () => {
-  if (!checkNotificationSupport()) {
-    console.log('[Firebase] Notifications not supported in this browser');
-    return 'denied';
-  }
-  
-  try {
-    // Modern promise-based API
-    return await Notification.requestPermission();
-  } catch (error) {
-    // Fallback for older browsers that use callback pattern
-    console.warn('[Firebase] Error with promise-based permission request:', error);
-    
-    return new Promise((resolve) => {
-      try {
-        Notification.requestPermission((result) => {
-          resolve(result);
-        });
-      } catch (fallbackError) {
-        console.error('[Firebase] Notification permission completely failed:', fallbackError);
-        resolve('denied');
-      }
-    });
-  }
-};
-
-// Initialize FCM if supported by the browser
-const initializeFCM = () => {
-  try {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && app) {
-      messaging = getMessaging(app);
-      console.log("[Firebase.js] Firebase Cloud Messaging initialized");
-      return true;
-    }
-  } catch (error) {
-    console.error("[Firebase.js] Firebase Cloud Messaging initialization failed:", error);
-  }
-  return false;
-};
+// // Initialize Firebase Cloud Messaging if browser supports it
+// if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+//   try {
+//     messaging = getMessaging(app);
+//     console.log("[Firebase.js] Firebase Cloud Messaging initialized");
+//   } catch (error) {
+//     console.error("[Firebase.js] Firebase Cloud Messaging initialization failed:", error);
+//   }
+// }
 
 // Request permission and get FCM token - without VAPID key
 const requestNotificationPermission = async () => {
-  console.log("[Firebase] Starting notification permission request...");
-  
   try {
-    // Initialize FCM if not already done
-    if (!messaging && !initializeFCM()) {
-      console.log("[Firebase] FCM not supported or failed to initialize");
-      return null;
-    }
+    if (!messaging) return null;
 
-    // Check if notification API is supported
-    if (!checkNotificationSupport()) {
-      console.log("[Firebase] Notification API not supported in this browser");
-      return null;
-    }
-
-    // Request permission safely
-    const permission = await safeRequestNotificationPermission();
-    console.log("[Firebase] Notification permission result:", permission);
+    // Request permission
+    const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
-      console.log("[Firebase] Notification permission not granted");
+      console.log("Notification permission denied");
       return null;
     }
 
-    try {
-      // Get FCM token without VAPID key
-      console.log("[Firebase] Requesting FCM token...");
-      const currentToken = await getToken(messaging);
-      
-      if (currentToken) {
-        console.log("[Firebase] FCM token received");
-        return currentToken;
-      } else {
-        console.log("[Firebase] No FCM token available");
-        return null;
-      }
-    } catch (tokenError) {
-      console.error("[Firebase] Error getting FCM token:", tokenError);
+    // Get FCM token without VAPID key
+    // Note: This will only work on Chrome running on FCM v1 projects
+    // For full cross-browser support, you'd need a VAPID key
+    const currentToken = await getToken(messaging);
+
+    if (currentToken) {
+      console.log("FCM token:", currentToken);
+      return currentToken;
+    } else {
+      console.log("No FCM token available");
       return null;
     }
   } catch (error) {
-    console.error("[Firebase] Error in requestNotificationPermission:", error);
+    console.error("Error requesting notification permission:", error);
     return null;
-  }
-};
-
-// Safely create and show a notification
-const showNotification = (title, body, icon = "/logo192.png") => {
-  try {
-    if (!checkNotificationSupport()) {
-      console.log("[Firebase] Cannot show notification - not supported");
-      return false;
-    }
-    
-    if (getNotificationPermission() !== "granted") {
-      console.log("[Firebase] Cannot show notification - permission not granted");
-      return false;
-    }
-    
-    const notification = new Notification(title, { body, icon });
-    
-    notification.onclick = () => {
-      window.focus();
-      notification.close();
-    };
-    
-    return true;
-  } catch (error) {
-    console.error("[Firebase] Error showing notification:", error);
-    return false;
   }
 };
 
 // Listen for messages when app is in foreground
 const setupMessageListener = () => {
-  if (!messaging) {
-    console.log("[Firebase] Message listener setup failed - messaging not initialized");
-    return;
-  }
+  if (!messaging) return;
 
-  try {
-    onMessage(messaging, (payload) => {
-      console.log("[Firebase] Message received in foreground:", payload);
+  onMessage(messaging, (payload) => {
+    console.log("Message received in foreground:", payload);
 
-      // Display a notification even when in foreground
-      if (payload.notification) {
-        const { title, body } = payload.notification;
-        showNotification(title, body);
+    // Display a notification even when in foreground
+    if (payload.notification) {
+      const { title, body } = payload.notification;
+
+      // Show notification using the Notification API if permission granted
+      if (Notification.permission === "granted") {
+        const notification = new Notification(title, {
+          body,
+          icon: "/logo192.png",
+        });
+
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
       }
-    });
-    console.log("[Firebase] Message listener setup complete");
-  } catch (error) {
-    console.error("[Firebase] Error setting up message listener:", error);
-  }
+    }
+  });
 };
 
 // Setup a listener for new events in Firestore with error handling
@@ -216,8 +121,6 @@ const subscribeToEvents = (onEventAdded) => {
       limit(20)
     );
 
-    console.log("[Firebase] Setting up Firestore event subscription...");
-    
     // Listen for real-time updates with error handling
     return onSnapshot(
       recentEventsQuery,
@@ -239,20 +142,8 @@ const subscribeToEvents = (onEventAdded) => {
 
               // Only trigger for events that are less than 60 seconds old
               if (timeDiffInSeconds < 60) {
-                console.log("[Firebase] New event detected:", newEvent);
+                console.log("New event detected:", newEvent);
                 onEventAdded(newEvent);
-                
-                // Also try to show a notification directly
-                if (checkNotificationSupport() && getNotificationPermission() === "granted") {
-                  try {
-                    showNotification(
-                      "New HomePal Event", 
-                      `Event: ${newEvent.action || 'New event detected'}`
-                    );
-                  } catch (notifError) {
-                    console.error("[Firebase] Error showing direct notification:", notifError);
-                  }
-                }
               }
             }
           });
@@ -299,10 +190,10 @@ const createMockEvent = async (eventType = "Bed-Exit") => {
     };
 
     const docRef = await addDoc(eventsRef, newEvent);
-    console.log("[Firebase] Mock event created with ID:", docRef.id);
+    console.log("Mock event created with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("[Firebase] Error creating mock event:", error);
+    console.error("Error creating mock event:", error);
     return null;
   }
 };
@@ -310,12 +201,9 @@ const createMockEvent = async (eventType = "Bed-Exit") => {
 export {
   app,
   db,
-  auth,
   messaging,
-  checkNotificationSupport,
   requestNotificationPermission,
   setupMessageListener,
   subscribeToEvents,
   createMockEvent,
-  showNotification,
 };
