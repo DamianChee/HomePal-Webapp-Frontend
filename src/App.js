@@ -3,41 +3,44 @@ import "./App.css";
 import useFetch from "./hooks/useFetch";
 import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 import InAppNotification from "./components/InAppNotification";
-import { subscribeToEvents } from "./firebase";
 import { 
-  initializeSocket, 
-  registerCallback, 
-  unregisterCallback,
-  isConnected
-} from "./utils/socketService";
+  requestNotificationPermission, 
+  setupMessageListener, 
+  subscribeToEvents,
+  checkNotificationSupport,
+  showNotification,
+  registerEventCallback,
+  unregisterEventCallback
+} from "./firebase";
 
 /**
  * App Component
  *
  * Main application component that serves as the entry point.
- * Now using CarePal Mobile Dashboard as the default view with WebSocket notification support.
+ * Now using CarePal Mobile Dashboard as the default view.
+ * The original app functionality is kept but commented out.
  *
  * The App includes:
  * 1. CarePal dashboard as the main view
  * 2. Firebase connectivity available in the background
  * 3. Uses modern React practices (hooks, functional components)
- * 4. Real-time event notifications via WebSockets (works on all browsers and iOS)
- * 5. Universal in-app notifications for all platforms
+ * 4. Real-time event notifications from Firestore
+ * 5. Universal fallback notifications for all platforms
  */
 function App() {
   console.log("[App] Component rendering...");
   
   const fetchData = useFetch();
   const [newEvents, setNewEvents] = useState([]);
+  const [notificationPermission, setNotificationPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [appReady, setAppReady] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
   
-  // State for in-app notifications
+  // State for in-app notifications (iOS fallback)
   const [notification, setNotification] = useState(null);
   
-  // Notification callback
+  // Notification callback for platforms without native notifications
   const handleNotification = useCallback((notificationData) => {
     console.log("[App] In-app notification triggered:", notificationData);
     setNotification(notificationData);
@@ -95,66 +98,74 @@ function App() {
     }
   };
 
-  // Handle new event received from WebSocket
+  // Handle new event received from Firestore
   const handleNewEvent = (event) => {
     console.log("[App] New event received:", event);
     try {
       setNewEvents(prevEvents => [event, ...prevEvents]);
       
-      // Display the notification using in-app notification
+      // Try to show a notification - no need to check here as 
+      // showNotification will handle that internally and call our callback
+      // if native notifications aren't available
+      showNotification(
+        'HomePal Alert', 
+        `New event: ${event.action || 'Event detected'}`
+      );
+    } catch (error) {
+      console.error('[App] Error handling new event:', error);
+      // Even if notification fails, still show in-app notification
       handleNotification({ 
         title: 'HomePal Alert', 
         body: `New event: ${event.action || 'Event detected'}` 
       });
-    } catch (error) {
-      console.error('[App] Error handling new event:', error);
     }
   };
 
-  // Set up the socket connection
-  const setupSocketConnection = useCallback(() => {
-    // Get the backend URL from env or use a fallback
-    const backendUrl = process.env.REACT_APP_BACKEND_DOMAIN || window.location.origin;
-    console.log("[App] Setting up WebSocket connection to:", backendUrl);
-    
-    try {
-      const initialized = initializeSocket(backendUrl);
-      if (initialized) {
-        console.log("[App] WebSocket initialized successfully");
-        
-        // Set up an interval to check connection status
-        const statusInterval = setInterval(() => {
-          const connected = isConnected();
-          setSocketConnected(connected);
-        }, 5000);
-        
-        return () => {
-          clearInterval(statusInterval);
-        };
-      } else {
-        console.error("[App] Failed to initialize WebSocket");
-        return () => {};
-      }
-    } catch (error) {
-      console.error("[App] Error setting up WebSocket:", error);
-      return () => {};
-    }
-  }, []);
-
-  // Register the notification callback
+  // Register the in-app notification callback
   useEffect(() => {
-    // Register for notifications
-    registerCallback('notification', handleNotification);
+    // Register for fallback notifications
+    registerEventCallback(handleNotification);
     
     // Cleanup on unmount
     return () => {
-      unregisterCallback('notification', handleNotification);
+      unregisterEventCallback(handleNotification);
     };
   }, [handleNotification]);
 
-  // Setup WebSocket connection and Firebase listeners
+  // Setup notification permission and Firebase listeners
   useEffect(() => {
     console.log("[App] Main useEffect running...");
+    
+    // Setup notification permission with error handling
+    const setupNotifications = async () => {
+      console.log("[App] Setting up notifications...");
+      try {
+        // Check if notifications are supported - but proceed anyway
+        // as we'll use fallback for unsupported platforms
+        const supported = checkNotificationSupport();
+        console.log("[App] Notification API supported:", supported);
+        
+        // Try to request permission if supported
+        let permission = false;
+        if (supported) {
+          permission = await requestNotificationPermission();
+          setNotificationPermission(permission);
+          console.log("[App] Notification permission:", permission);
+          
+          if (permission) {
+            // Setup foreground message listener
+            setupMessageListener();
+          }
+        } else {
+          console.log("[App] Using fallback notifications only");
+        }
+        
+        return true; // Return success even if permissions denied, we'll use fallback
+      } catch (error) {
+        console.error("[App] Failed to setup notifications:", error);
+        return true; // Still return success, we'll use fallback
+      }
+    };
     
     // Initialize all services
     const initializeApp = async () => {
@@ -164,11 +175,15 @@ function App() {
       
       try {
         // Try to initialize all services but continue even if some fail
-        let firebaseUnsubscribe = () => {};
+        let unsubscribe = () => {};
         
-        // 1. Setup WebSocket connection
-        console.log("[App] Setting up WebSocket...");
-        const socketCleanup = setupSocketConnection();
+        // 1. Setup notification permission (non-critical)
+        console.log("[App] Setting up notifications...");
+        await setupNotifications()
+          .catch(err => {
+            console.warn('[App] Notification setup failed:', err);
+            // Continue anyway, we have fallback
+          });
         
         // 2. Verify backend connectivity (more critical)
         console.log("[App] Checking API status...");
@@ -179,10 +194,10 @@ function App() {
           });
         console.log("[App] API status:", apiStatus ? "Connected" : "Disconnected");
         
-        // 3. Subscribe to Firestore events (as a backup for WebSockets)
-        console.log("[App] Setting up Firestore listeners as backup...");
+        // 3. Subscribe to Firestore events (handle errors internally)
+        console.log("[App] Setting up Firestore listeners...");
         try {
-          firebaseUnsubscribe = subscribeToEvents(handleNewEvent) || (() => {});
+          unsubscribe = subscribeToEvents(handleNewEvent) || (() => {});
           console.log("[App] Firestore listeners set up successfully");
         } catch (firestoreError) {
           console.error("[App] Failed to subscribe to Firestore events:", firestoreError);
@@ -204,12 +219,10 @@ function App() {
         return () => {
           console.log("[App] Running cleanup function");
           try {
-            if (firebaseUnsubscribe) {
-              firebaseUnsubscribe();
+            if (unsubscribe) {
+              unsubscribe();
               console.log("[App] Unsubscribed from Firestore");
             }
-            socketCleanup();
-            console.log("[App] WebSocket cleanup complete");
           } catch (cleanupError) {
             console.error("[App] Cleanup error:", cleanupError);
           }
@@ -224,21 +237,21 @@ function App() {
     
     // Initialize app and store cleanup function
     console.log("[App] Starting app initialization...");
-    const cleanupPromise = initializeApp();
+    const cleanup = initializeApp();
     
     // Return cleanup function for useEffect
     return () => {
       console.log("[App] Component unmounting, running cleanup...");
-      Promise.resolve(cleanupPromise).then(cleanupFn => {
+      cleanup.then(cleanupFn => {
         try {
-          if (cleanupFn) cleanupFn();
+          cleanupFn();
           console.log("[App] Cleanup completed");
         } catch (error) {
           console.error("[App] Error during cleanup:", error);
         }
       });
     };
-  }, [setupSocketConnection]);
+  }, []);
 
   // Handle clearing notification
   const handleCloseNotification = () => {
@@ -270,10 +283,7 @@ function App() {
         </div>
       ) : (
         <div className="dashboard-container">
-          <MobileMonitorDashboard 
-            newEvents={newEvents} 
-            socketConnected={socketConnected}  
-          />
+          <MobileMonitorDashboard newEvents={newEvents} />
         </div>
       )}
     </div>

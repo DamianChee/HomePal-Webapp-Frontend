@@ -1,65 +1,35 @@
 import React, { useState } from 'react';
-import { createMockEvent as createFirebaseMockEvent } from '../firebase';
-import { createMockEvent as createSocketMockEvent } from '../utils/socketService';
+import { createMockEvent } from '../firebase';
 import { X } from 'lucide-react';
 
 /**
  * TestNotifications Component
  * 
- * A simple test component for creating mock events via WebSockets or Firestore
+ * A simple test component for creating mock events in Firestore
  * to test the real-time notification system
  */
 function TestNotifications({ onClose }) {
   const [loading, setLoading] = useState(false);
   const [eventType, setEventType] = useState('Bed-Exit');
   const [result, setResult] = useState(null);
-  const [method, setMethod] = useState('websocket'); // 'websocket' or 'firebase'
 
   const handleCreateEvent = async () => {
     setLoading(true);
     setResult(null);
     
     try {
-      if (method === 'websocket') {
-        // Try WebSocket approach first
-        const socketSuccess = await createSocketMockEvent(eventType);
-        
-        if (socketSuccess) {
-          setResult({
-            success: true,
-            message: `Mock event "${eventType}" created successfully via WebSocket`
-          });
-        } else {
-          // If WebSocket fails, fall back to Firebase
-          const eventId = await createFirebaseMockEvent(eventType);
-          
-          if (eventId) {
-            setResult({
-              success: true,
-              message: `Mock event "${eventType}" created via Firebase with ID: ${eventId} (WebSocket failed)`
-            });
-          } else {
-            setResult({
-              success: false,
-              message: 'Failed to create mock event via both WebSocket and Firebase'
-            });
-          }
-        }
+      const eventId = await createMockEvent(eventType);
+      
+      if (eventId) {
+        setResult({
+          success: true,
+          message: `Mock event "${eventType}" created successfully with ID: ${eventId}`
+        });
       } else {
-        // Use Firebase directly if selected
-        const eventId = await createFirebaseMockEvent(eventType);
-        
-        if (eventId) {
-          setResult({
-            success: true,
-            message: `Mock event "${eventType}" created successfully with ID: ${eventId}`
-          });
-        } else {
-          setResult({
-            success: false,
-            message: 'Failed to create mock event via Firebase'
-          });
-        }
+        setResult({
+          success: false,
+          message: 'Failed to create mock event'
+        });
       }
     } catch (error) {
       console.error('Error in test component:', error);
@@ -99,20 +69,6 @@ function TestNotifications({ onClose }) {
             </select>
           </div>
 
-          <div>
-            <label className="text-sm text-gray-300 block mb-2">
-              Method
-            </label>
-            <select
-              value={method}
-              onChange={(e) => setMethod(e.target.value)}
-              className="w-full bg-gray-700 text-white rounded px-3 py-2"
-            >
-              <option value="websocket">WebSocket (preferred)</option>
-              <option value="firebase">Firebase (fallback)</option>
-            </select>
-          </div>
-
           <button
             onClick={handleCreateEvent}
             disabled={loading}
@@ -136,8 +92,8 @@ function TestNotifications({ onClose }) {
           )}
 
           <div className="text-xs text-gray-400 mt-2">
-            <p>WebSocket: Real-time, works on all platforms including iOS.</p>
-            <p>Firebase: Used as fallback if WebSocket is not available.</p>
+            <p>This will create a real document in your Firestore database.</p>
+            <p>The notification system should detect it and show an alert.</p>
           </div>
         </div>
       </div>

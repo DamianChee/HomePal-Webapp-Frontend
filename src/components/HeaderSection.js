@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Moon, User, Edit2 } from "lucide-react";
 import { useMockEventGenerator } from "../utils/mockEventGenerator";
-import { createMockEvent } from "../utils/socketService";
+import { createDirectMockEvent } from "../utils/testDirectBackend";
 
 /**
  * HeaderSection Component
@@ -23,8 +23,8 @@ function HeaderSection({ roomName, onEditRoom }) {
   // State to prevent multiple rapid clicks
   const [isGenerating, setIsGenerating] = useState(false);
   
-  // Get the mock event generator function from Firebase (as fallback)
-  const generateFirebaseMockEvent = useMockEventGenerator();
+  // Get the mock event generator function
+  const generateMockEvent = useMockEventGenerator();
   
   /**
    * Hidden feature: Generate a mock event when the logo is clicked
@@ -46,23 +46,23 @@ function HeaderSection({ roomName, onEditRoom }) {
     setIsGenerating(true);
     
     try {
-      // Try WebSocket approach
-      console.log("Trying WebSocket mock event");
-      const socketSuccess = await createMockEvent();
+      // Try the direct approach first
+      console.log("Trying direct API call");
+      const directSuccess = await createDirectMockEvent();
       
-      if (socketSuccess) {
-        console.log("WebSocket mock event created successfully");
-        alert("Mock event created successfully via WebSocket!");
+      if (directSuccess) {
+        console.log("Direct mock event created successfully");
+        alert("Mock event created successfully!");
         return;
       }
       
-      // Fall back to Firebase approach if WebSocket fails
-      console.log("WebSocket approach failed, trying with Firebase");
-      const result = await generateFirebaseMockEvent();
+      // Fall back to the original approach if direct fails
+      console.log("Direct approach failed, trying with hook");
+      const result = await generateMockEvent();
       
       if (result.success) {
-        console.log("Firebase mock event created successfully");
-        alert("Mock event created successfully via Firebase!");
+        console.log("Mock event created successfully");
+        alert("Mock event created successfully!");
       } else {
         console.error("Failed to create mock event", result.error);
         alert("Failed to create mock event. Check console for details.");
