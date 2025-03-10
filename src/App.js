@@ -4,11 +4,11 @@ import useFetch from "./hooks/useFetch";
 import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 import InAppNotification from "./components/InAppNotification";
 import { subscribeToEvents } from "./firebase";
-import { 
-  initializeSocket, 
-  registerCallback, 
+import {
+  initializeSocket,
+  registerCallback,
   unregisterCallback,
-  isConnected
+  isConnected,
 } from "./utils/socketService";
 
 /**
@@ -26,23 +26,23 @@ import {
  */
 function App() {
   console.log("[App] Component rendering...");
-  
+
   const fetchData = useFetch();
   const [newEvents, setNewEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [appReady, setAppReady] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
-  
+
   // State for in-app notifications
   const [notification, setNotification] = useState(null);
-  
+
   // Notification callback
   const handleNotification = useCallback((notificationData) => {
     console.log("[App] In-app notification triggered:", notificationData);
     setNotification(notificationData);
   }, []);
-  
+
   const handleGetAPIStatus = async () => {
     console.log("[App] Checking API status...");
     try {
@@ -99,35 +99,37 @@ function App() {
   const handleNewEvent = (event) => {
     console.log("[App] New event received:", event);
     try {
-      setNewEvents(prevEvents => [event, ...prevEvents]);
-      
+      setNewEvents((prevEvents) => [event, ...prevEvents]);
+
       // Display the notification using in-app notification
-      handleNotification({ 
-        title: 'HomePal Alert', 
-        body: `New event: ${event.action || 'Event detected'}` 
+      handleNotification({
+        title: "HomePal Alert",
+        body: `New event: ${event.action || "Event detected"}`,
       });
     } catch (error) {
-      console.error('[App] Error handling new event:', error);
+      console.error("[App] Error handling new event:", error);
     }
   };
 
   // Set up the socket connection
   const setupSocketConnection = useCallback(() => {
     // Get the backend URL from env or use a fallback
-    const backendUrl = process.env.REACT_APP_BACKEND_DOMAIN || window.location.origin;
+    const backendUrl =
+      process.env.REACT_APP_BACKEND_DOMAIN + "/test-websocket" ||
+      window.location.origin;
     console.log("[App] Setting up WebSocket connection to:", backendUrl);
-    
+
     try {
       const initialized = initializeSocket(backendUrl);
       if (initialized) {
         console.log("[App] WebSocket initialized successfully");
-        
+
         // Set up an interval to check connection status
         const statusInterval = setInterval(() => {
           const connected = isConnected();
           setSocketConnected(connected);
         }, 5000);
-        
+
         return () => {
           clearInterval(statusInterval);
         };
@@ -144,54 +146,61 @@ function App() {
   // Register the notification callback
   useEffect(() => {
     // Register for notifications
-    registerCallback('notification', handleNotification);
-    
+    registerCallback("notification", handleNotification);
+
     // Cleanup on unmount
     return () => {
-      unregisterCallback('notification', handleNotification);
+      unregisterCallback("notification", handleNotification);
     };
   }, [handleNotification]);
 
   // Setup WebSocket connection and Firebase listeners
   useEffect(() => {
     console.log("[App] Main useEffect running...");
-    
+
     // Initialize all services
     const initializeApp = async () => {
       console.log("[App] Initializing app...");
       setIsLoading(true);
       setHasError(false);
-      
+
       try {
         // Try to initialize all services but continue even if some fail
         let firebaseUnsubscribe = () => {};
-        
+
         // 1. Setup WebSocket connection
         console.log("[App] Setting up WebSocket...");
         const socketCleanup = setupSocketConnection();
-        
+
         // 2. Verify backend connectivity (more critical)
         console.log("[App] Checking API status...");
-        const apiStatus = await handleGetAPIStatus()
-          .catch(err => {
-            console.warn('[App] API status check failed:', err);
-            return false;
-          });
-        console.log("[App] API status:", apiStatus ? "Connected" : "Disconnected");
-        
+        const apiStatus = await handleGetAPIStatus().catch((err) => {
+          console.warn("[App] API status check failed:", err);
+          return false;
+        });
+        console.log(
+          "[App] API status:",
+          apiStatus ? "Connected" : "Disconnected"
+        );
+
         // 3. Subscribe to Firestore events (as a backup for WebSockets)
         console.log("[App] Setting up Firestore listeners as backup...");
         try {
           firebaseUnsubscribe = subscribeToEvents(handleNewEvent) || (() => {});
           console.log("[App] Firestore listeners set up successfully");
         } catch (firestoreError) {
-          console.error("[App] Failed to subscribe to Firestore events:", firestoreError);
+          console.error(
+            "[App] Failed to subscribe to Firestore events:",
+            firestoreError
+          );
           // App can still function without real-time updates
         }
-        
+
         // Instead of immediately setting loading to false, we use a slight delay
         // This gives time for any React state updates to propagate
-        console.log("[App] App initialization complete, preparing to render main content...");
+        console.log(
+          "[App] App initialization complete, preparing to render main content..."
+        );
         setTimeout(() => {
           console.log("[App] Setting loading state to false");
           setIsLoading(false);
@@ -199,7 +208,7 @@ function App() {
           setAppReady(true);
           console.log("[App] App is now ready");
         }, 500); // Short delay to ensure state updates are processed
-        
+
         // Return cleanup function
         return () => {
           console.log("[App] Running cleanup function");
@@ -221,15 +230,15 @@ function App() {
         return () => {}; // Empty cleanup function
       }
     };
-    
+
     // Initialize app and store cleanup function
     console.log("[App] Starting app initialization...");
     const cleanupPromise = initializeApp();
-    
+
     // Return cleanup function for useEffect
     return () => {
       console.log("[App] Component unmounting, running cleanup...");
-      Promise.resolve(cleanupPromise).then(cleanupFn => {
+      Promise.resolve(cleanupPromise).then((cleanupFn) => {
         try {
           if (cleanupFn) cleanupFn();
           console.log("[App] Cleanup completed");
@@ -245,17 +254,24 @@ function App() {
     setNotification(null);
   };
 
-  console.log("[App] Current state - isLoading:", isLoading, "hasError:", hasError, "appReady:", appReady);
+  console.log(
+    "[App] Current state - isLoading:",
+    isLoading,
+    "hasError:",
+    hasError,
+    "appReady:",
+    appReady
+  );
 
   return (
     <div className="App">
       {/* In-app notification component - works on all platforms */}
-      <InAppNotification 
-        notification={notification} 
+      <InAppNotification
+        notification={notification}
         onClose={handleCloseNotification}
         autoHideDuration={5000}
       />
-      
+
       {isLoading ? (
         <div className="loading-screen">
           <div className="spinner"></div>
@@ -265,14 +281,17 @@ function App() {
       ) : hasError ? (
         <div className="error-screen">
           <h2>Connection Error</h2>
-          <p>Unable to connect to HomePal services. Please check your connection and try again.</p>
+          <p>
+            Unable to connect to HomePal services. Please check your connection
+            and try again.
+          </p>
           <button onClick={() => window.location.reload()}>Retry</button>
         </div>
       ) : (
         <div className="dashboard-container">
-          <MobileMonitorDashboard 
-            newEvents={newEvents} 
-            socketConnected={socketConnected}  
+          <MobileMonitorDashboard
+            newEvents={newEvents}
+            socketConnected={socketConnected}
           />
         </div>
       )}
