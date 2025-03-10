@@ -24,10 +24,12 @@ const firebaseConfig = {
 let app;
 let db = null;
 let messaging = null;
+let auth = null;
 
 try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
+  auth = getAuth();
   console.log("[Firebase.js] Firebase client SDK initialized");
 } catch (error) {
   console.error("[Firebase.js] Firebase initialization failed:", error);
