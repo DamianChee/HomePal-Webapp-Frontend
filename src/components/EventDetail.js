@@ -70,7 +70,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
         <div className="flex justify-between items-center px-3 py-2.5 border-b border-gray-700">
           <div className="flex items-center space-x-2">
             <div
-              className={`h-3 w-3 rounded-full ${getStatusColor(event.status)}`}
+              className={`h-3 w-3 rounded-full ${getStatusColor(event.event)}`}
             />
             <div>
               <h3 className="text-white text-sm font-medium">{event.event}</h3>
