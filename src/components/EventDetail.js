@@ -32,7 +32,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/attempted-bedside-exit.jpg"
             alt="Static image from public folder"
-            className="absolute inset-0 bg-gradient-to-b from-purple-900 to-yellow-400 opacity-20"
+            className="absolute inset-0 max-h-full"
           />
         );
       case "Bed-Entry":
@@ -40,7 +40,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bed-entry.jpg"
             alt="Static image from public folder"
-            className="absolute inset-0 bg-gradient-to-b from-purple-900 to-yellow-400 opacity-20"
+            className="absolute inset-0 max-h-full"
           />
         );
       case "Bed-Exit":
@@ -48,7 +48,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bed-exit.jpg"
             alt="Static image from public folder"
-            className="absolute inset-0 bg-gradient-to-b from-purple-900 to-yellow-400 opacity-20"
+            className="absolute inset-0 max-h-full"
           />
         );
       case "Bedside-Fall":
@@ -56,7 +56,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bedside-fall.jpg"
             alt="Static image from public folder"
-            className="absolute inset-0 bg-gradient-to-b from-purple-900 to-yellow-400 opacity-20"
+            className="absolute inset-0 max-h-full"
           />
         );
       default:
@@ -87,7 +87,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
         </div>
 
         {/* Event Footage */}
-        <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+        <div className="relative w-full mx-auto" style={{ aspectRatio: "4/3" }}>
           {/* Replace this next line to actual movement snapshot */}
           {/* <div className="absolute inset-0 bg-gradient-to-b from-purple-900 to-yellow-400 opacity-20" /> */}
           {PlaceholderRenderer()}
