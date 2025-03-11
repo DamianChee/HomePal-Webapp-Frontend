@@ -32,7 +32,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/attempted-bedside-exit.jpg"
             alt="Static image from public folder"
-            className="inset-0 object-contain"
+            className="inset-0 object-fill"
           />
         );
       case "Bed-Entry":
@@ -40,7 +40,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bed-entry.jpg"
             alt="Static image from public folder"
-            className="inset-0 object-contain"
+            className="inset-0 object-fill"
           />
         );
       case "Bed-Exit":
@@ -48,7 +48,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bed-exit.jpg"
             alt="Static image from public folder"
-            className="inset-0 object-contain"
+            className="inset-0 object-fill"
           />
         );
       case "Bedside-Fall":
@@ -56,7 +56,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bedside-fall.jpg"
             alt="Static image from public folder"
-            className="inset-0 object-contain"
+            className="inset-0 object-fill"
           />
         );
       default:
