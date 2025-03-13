@@ -45,43 +45,43 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Exit":
         return (
-          <div class="snap-x">
-            <div class="snap-center">
+          <div class="snap-x ...">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
                 style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
-            <div class="snap-center">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
                 style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
-            <div class="snap-center">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
                 style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
-            <div class="snap-center">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
                 style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
-            <div class="snap-center">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
                 style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
-            <div class="snap-center">
+            <div class="snap-center ...">
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
