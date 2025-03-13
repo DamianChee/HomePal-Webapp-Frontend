@@ -26,6 +26,8 @@ import "../custom-slick.css";
 function EventDetail({ event, getStatusColor, onClose }) {
   if (!event) return null;
 
+  const sliderRef = useRef(null);
+
   var settings = {
     dots: true,
     infinite: false,
@@ -34,11 +36,21 @@ function EventDetail({ event, getStatusColor, onClose }) {
     slidesToScroll: 1,
   };
 
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(0);
+    }
+  }, [event]);
+
   const PlaceholderRenderer = () => {
     switch (event.event) {
       case "Attempted-Bed-Exit":
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/attempted-bedside-exit-1.jpg"
               alt="Static image from public folder"
@@ -55,7 +67,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Entry":
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/bed-exit-3.jpg"
               alt="Static image from public folder"
@@ -72,7 +88,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Exit":
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/bed-exit-1.jpg"
               alt="Static image from public folder"
@@ -89,7 +109,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bedside-Fall":
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/missing-from-bed.jpg"
               alt="Static image from public folder"
