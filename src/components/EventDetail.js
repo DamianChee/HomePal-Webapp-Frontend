@@ -25,7 +25,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
 
   var settings = {
     dots: true,
-    infinite: false,
+    infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -38,16 +38,31 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/attempted-bedside-exit.jpg"
             alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
+            style={{ height: `-webkit-fill-available` }}
           />
         );
       case "Bed-Entry":
         return (
-          <img
-            src="/images/bed-entry.jpg"
-            alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          />
+          <Slider {...settings}>
+            <div>
+              <h3>1</h3>
+            </div>
+            <div>
+              <h3>2</h3>
+            </div>
+            <div>
+              <h3>3</h3>
+            </div>
+            <div>
+              <h3>4</h3>
+            </div>
+            <div>
+              <h3>5</h3>
+            </div>
+            <div>
+              <h3>6</h3>
+            </div>
+          </Slider>
         );
       case "Bed-Exit":
         return (
@@ -56,21 +71,21 @@ function EventDetail({ event, getStatusColor, onClose }) {
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
+                style={{ height: `-webkit-fill-available` }}
               />
             </div>
             <div>
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
+                style={{ height: `-webkit-fill-available` }}
               />
             </div>
             <div>
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
+                style={{ height: `-webkit-fill-available` }}
               />
             </div>
             <div>
