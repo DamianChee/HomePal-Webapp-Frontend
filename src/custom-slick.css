@@ -1,13 +1,13 @@
 /* Container styling */
-.slick-slider {
+.slick-list {
   display: inline;
-  height: -webkit-fill-available;
+  height: auto;
   align-items: center;
 }
 
-.slick-slide {
+.slick-track {
   display: inline;
-  height: 100%;
+  height: auto;
   align-items: center;
 }
 
