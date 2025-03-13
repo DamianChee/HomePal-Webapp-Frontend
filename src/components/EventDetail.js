@@ -27,7 +27,8 @@ function EventDetail({ event, getStatusColor, onClose }) {
 
   var settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
+    adaptiveHeight: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
