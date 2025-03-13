@@ -1,6 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import Slider from "react-slick";
+import { useRef, useEffect } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../custom-slick.css";
