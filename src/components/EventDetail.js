@@ -1,6 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import Slider from "react-slick";
+import { useRef } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../custom-slick.css";
@@ -25,7 +26,7 @@ import "../custom-slick.css";
  */
 function EventDetail({ event, getStatusColor, onClose }) {
   if (!event) return null;
-
+  const sliderRef = useRef(null);
   var settings = {
     dots: true,
     infinite: false,
@@ -37,8 +38,13 @@ function EventDetail({ event, getStatusColor, onClose }) {
   const PlaceholderRenderer = () => {
     switch (event.event) {
       case "Attempted-Bed-Exit":
+        sliderRef.current?.slickGoTo(0);
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/attempted-bedside-exit-1.jpg"
               alt="Static image from public folder"
@@ -54,8 +60,13 @@ function EventDetail({ event, getStatusColor, onClose }) {
           </Slider>
         );
       case "Bed-Entry":
+        sliderRef.current?.slickGoTo(0);
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/bed-exit-3.jpg"
               alt="Static image from public folder"
@@ -71,8 +82,13 @@ function EventDetail({ event, getStatusColor, onClose }) {
           </Slider>
         );
       case "Bed-Exit":
+        sliderRef.current?.slickGoTo(0);
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/bed-exit-1.jpg"
               alt="Static image from public folder"
@@ -88,8 +104,13 @@ function EventDetail({ event, getStatusColor, onClose }) {
           </Slider>
         );
       case "Bedside-Fall":
+        sliderRef.current?.slickGoTo(0);
         return (
-          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+          <Slider
+            {...settings}
+            style={{ height: `-webkit-fill-available` }}
+            ref={sliderRef}
+          >
             <img
               src="/images/missing-from-bed.jpg"
               alt="Static image from public folder"
