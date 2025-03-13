@@ -38,8 +38,13 @@ function EventDetail({ event, getStatusColor, onClose }) {
     switch (event.event) {
       case "Attempted-Bed-Exit":
         return (
-          <Slider {...settings}>
-            <div>
+          <Slider
+            {...settings}
+            style={{ display: `inline`, height: `-webkit-fill-available` }}
+          >
+            <div
+              style={{ display: `inline`, height: `-webkit-fill-available` }}
+            >
               <img
                 src="/images/attempted-bedside-exit.jpg"
                 alt="Static image from public folder"
