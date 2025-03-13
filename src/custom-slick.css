@@ -5,9 +5,16 @@
 
 .slick-track {
   height: -webkit-fill-available;
+  display: flex !important;
+}
+
+.slick-slide {
+  height: inherit !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 .slick-slide img {
-  height: -webkit-fill-available !important;
-  width: auto !important;
+  height: inherit !important;
 }
