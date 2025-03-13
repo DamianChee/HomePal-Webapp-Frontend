@@ -33,7 +33,6 @@ function EventDetail({ event, getStatusColor, onClose }) {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    className: "slick-custom",
   };
 
   const PlaceholderRenderer = () => {

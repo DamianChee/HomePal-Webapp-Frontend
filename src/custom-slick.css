@@ -1,6 +1,11 @@
 /* Container styling */
-.slick-custom {
+.slick-list {
   height: -webkit-fill-available;
+}
+
+.slick-track {
+  height: auto;
+  align-items: center;
 }
 
 .slick-slide img {
