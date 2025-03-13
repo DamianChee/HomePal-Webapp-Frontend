@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../index.css";
+import "../custom-slick.css";
 
 /**
  * EventDetail Component
@@ -39,13 +39,8 @@ function EventDetail({ event, getStatusColor, onClose }) {
     switch (event.event) {
       case "Attempted-Bed-Exit":
         return (
-          <Slider
-            {...settings}
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          >
-            <div
-              style={{ display: `inline`, height: `-webkit-fill-available` }}
-            >
+          <Slider {...settings}>
+            <div>
               <img
                 src="/images/attempted-bedside-exit.jpg"
                 alt="Static image from public folder"
