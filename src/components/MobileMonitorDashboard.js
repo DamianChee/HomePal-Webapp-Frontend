@@ -466,7 +466,7 @@ function MobileMonitorDashboard() {
                     <div className="flex items-center space-x-3">
                       <div className="h-3 w-3 bg-red-500 rounded-full"></div>
                       <div>
-                        <div className="text-white text-sm font-medium">
+                        <div className="text-white text-sm font-medium text-left">
                           Bed Exit Alerts
                         </div>
                         <div className="text-xs text-gray-400">
@@ -512,7 +512,7 @@ function MobileMonitorDashboard() {
                     <div className="flex items-center space-x-3">
                       <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
                       <div>
-                        <div className="text-white text-sm font-medium">
+                        <div className="text-white text-sm font-medium text-left">
                           Edge Detection
                         </div>
                         <div className="text-xs text-gray-400">
@@ -568,10 +568,10 @@ function MobileMonitorDashboard() {
                 </div>
 
                 <div className="mt-3 text-xs text-gray-400">
-                  Primary contact: +1 (555) 123-4567
+                  Primary contact: +65 9123 4567
                 </div>
                 <div className="mt-1 text-xs text-gray-400">
-                  Secondary contact: +1 (555) 987-6543
+                  Secondary contact: +65 9876 5432
                 </div>
               </div>
 
