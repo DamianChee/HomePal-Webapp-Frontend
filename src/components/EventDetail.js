@@ -40,42 +40,69 @@ function EventDetail({ event, getStatusColor, onClose }) {
         return (
           <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
             <img
-              src="/images/attempted-bedside-exit.jpg"
+              src="/images/attempted-bedside-exit-1.jpg"
               alt="Static image from public folder"
             />
             <img
-              src="/images/attempted-bedside-exit.jpg"
+              src="/images/attempted-bedside-exit-2.jpg"
               alt="Static image from public folder"
             />
             <img
-              src="/images/attempted-bedside-exit.jpg"
+              src="/images/attempted-bedside-exit-3.jpg"
               alt="Static image from public folder"
             />
           </Slider>
         );
       case "Bed-Entry":
         return (
-          <img
-            src="/images/bed-entry.jpg"
-            alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          />
+          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+            <img
+              src="/images/bed-exit-3.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/bed-exit-2.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/bed-exit-1.jpg"
+              alt="Static image from public folder"
+            />
+          </Slider>
         );
       case "Bed-Exit":
         return (
-          <img
-            src="/images/bed-exit.jpg"
-            alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          />
+          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+            <img
+              src="/images/bed-exit-1.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/bed-exit-2.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/bed-exit-3.jpg"
+              alt="Static image from public folder"
+            />
+          </Slider>
         );
       case "Bedside-Fall":
         return (
-          <img
-            src="/images/bedside-fall.jpg"
-            alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          />
+          <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
+            <img
+              src="/images/missing-from-bed.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/missing-from-bed.jpg"
+              alt="Static image from public folder"
+            />
+            <img
+              src="/images/missing-from-bed.jpg"
+              alt="Static image from public folder"
+            />
+          </Slider>
         );
       default:
         return null;
