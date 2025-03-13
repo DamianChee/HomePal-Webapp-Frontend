@@ -25,9 +25,15 @@ import "../custom-slick.css";
  * @param {function} props.onClose - Function to close the detail view
  */
 function EventDetail({ event, getStatusColor, onClose }) {
-  if (!event) return null;
-
   const sliderRef = useRef(null);
+
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(0);
+    }
+  }, [event]);
+
+  if (!event) return null;
 
   var settings = {
     dots: true,
@@ -36,12 +42,6 @@ function EventDetail({ event, getStatusColor, onClose }) {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-
-  useEffect(() => {
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0);
-    }
-  }, [event]);
 
   const PlaceholderRenderer = () => {
     switch (event.event) {
