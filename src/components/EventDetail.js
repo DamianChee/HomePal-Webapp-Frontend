@@ -42,17 +42,14 @@ function EventDetail({ event, getStatusColor, onClose }) {
             <img
               src="/images/attempted-bedside-exit.jpg"
               alt="Static image from public folder"
-              style={{ display: `inline`, height: `-webkit-fill-available` }}
             />
             <img
               src="/images/attempted-bedside-exit.jpg"
               alt="Static image from public folder"
-              style={{ display: `inline`, height: `-webkit-fill-available` }}
             />
             <img
               src="/images/attempted-bedside-exit.jpg"
               alt="Static image from public folder"
-              style={{ display: `inline`, height: `-webkit-fill-available` }}
             />
           </Slider>
         );
