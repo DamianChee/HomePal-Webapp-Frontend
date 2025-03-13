@@ -1,6 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
-import Slider from "react-slick";
+import { useState } from "react";
 
 /**
  * EventDetail Component
@@ -23,13 +23,7 @@ import Slider from "react-slick";
 function EventDetail({ event, getStatusColor, onClose }) {
   if (!event) return null;
 
-  var settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
+  const staticImage = "/images/static-image.jpg";
 
   const PlaceholderRenderer = () => {
     switch (event.event) {
@@ -51,50 +45,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Exit":
         return (
-          <Slider {...settings}>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-          </Slider>
+          <img
+            src="/images/bed-exit.jpg"
+            alt="Static image from public folder"
+            style={{ display: `inline`, height: `-webkit-fill-available` }}
+          />
         );
       case "Bedside-Fall":
         return (
