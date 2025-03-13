@@ -6,3 +6,8 @@
 .slick-track {
   height: -webkit-fill-available;
 }
+
+.slick-slide img {
+  height: -webkit-fill-available !important;
+  width: auto !important;
+}
