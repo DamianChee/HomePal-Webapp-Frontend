@@ -25,7 +25,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
 
   var settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -38,7 +38,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/attempted-bedside-exit.jpg"
             alt="Static image from public folder"
-            style={{ height: `-webkit-fill-available` }}
+            style={{ display: `inline`, height: `-webkit-fill-available` }}
           />
         );
       case "Bed-Entry":
@@ -46,7 +46,7 @@ function EventDetail({ event, getStatusColor, onClose }) {
           <img
             src="/images/bed-entry.jpg"
             alt="Static image from public folder"
-            style={{ height: `-webkit-fill-available` }}
+            style={{ display: `inline`, height: `-webkit-fill-available` }}
           />
         );
       case "Bed-Exit":
@@ -56,21 +56,21 @@ function EventDetail({ event, getStatusColor, onClose }) {
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ height: `-webkit-fill-available` }}
+                style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
             <div>
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ height: `-webkit-fill-available` }}
+                style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
             <div>
               <img
                 src="/images/bed-exit.jpg"
                 alt="Static image from public folder"
-                style={{ height: `-webkit-fill-available` }}
+                style={{ display: `inline`, height: `-webkit-fill-available` }}
               />
             </div>
             <div>
