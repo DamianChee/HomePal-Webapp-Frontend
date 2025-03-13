@@ -1,26 +1,17 @@
 /* Container styling */
-.slick-slide {
+.slick-slider {
   display: inline;
   height: -webkit-fill-available;
+  align-items: center;
+}
+
+.slick-slide {
+  display: inline;
+  height: 100%;
   align-items: center;
 }
 
 .slick-slide img {
   display: inline;
   height: -webkit-fill-available;
-}
-
-/* Dots navigation */
-.slick-dots {
-  bottom: 20px;
-}
-
-.slick-dots li button {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.slick-dots li.slick-active button {
-  background-color: #007aff;
 }
