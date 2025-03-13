@@ -1,6 +1,8 @@
 import React from "react";
 import { X } from "lucide-react";
 import { useState } from "react";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 /**
  * EventDetail Component
@@ -23,17 +25,38 @@ import { useState } from "react";
 function EventDetail({ event, getStatusColor, onClose }) {
   if (!event) return null;
 
-  const staticImage = "/images/static-image.jpg";
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   const PlaceholderRenderer = () => {
     switch (event.event) {
       case "Attempted-Bed-Exit":
         return (
-          <img
-            src="/images/attempted-bedside-exit.jpg"
-            alt="Static image from public folder"
-            style={{ display: `inline`, height: `-webkit-fill-available` }}
-          />
+          <Slider {...settings}>
+            <div>
+              <h3>1</h3>
+            </div>
+            <div>
+              <h3>2</h3>
+            </div>
+            <div>
+              <h3>3</h3>
+            </div>
+            <div>
+              <h3>4</h3>
+            </div>
+            <div>
+              <h3>5</h3>
+            </div>
+            <div>
+              <h3>6</h3>
+            </div>
+          </Slider>
         );
       case "Bed-Entry":
         return (
@@ -45,50 +68,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Exit":
         return (
-          <div class="snap-x ...">
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div class="snap-center ...">
-              <img
-                src="/images/bed-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-          </div>
+          <img
+            src="/images/bed-exit.jpg"
+            alt="Static image from public folder"
+            style={{ display: `inline`, height: `-webkit-fill-available` }}
+          />
         );
       case "Bedside-Fall":
         return (
