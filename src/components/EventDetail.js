@@ -39,27 +39,21 @@ function EventDetail({ event, getStatusColor, onClose }) {
       case "Attempted-Bed-Exit":
         return (
           <Slider {...settings} style={{ height: `-webkit-fill-available` }}>
-            <div>
-              <img
-                src="/images/attempted-bedside-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/attempted-bedside-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
-            <div>
-              <img
-                src="/images/attempted-bedside-exit.jpg"
-                alt="Static image from public folder"
-                style={{ display: `inline`, height: `-webkit-fill-available` }}
-              />
-            </div>
+            <img
+              src="/images/attempted-bedside-exit.jpg"
+              alt="Static image from public folder"
+              style={{ display: `inline`, height: `-webkit-fill-available` }}
+            />
+            <img
+              src="/images/attempted-bedside-exit.jpg"
+              alt="Static image from public folder"
+              style={{ display: `inline`, height: `-webkit-fill-available` }}
+            />
+            <img
+              src="/images/attempted-bedside-exit.jpg"
+              alt="Static image from public folder"
+              style={{ display: `inline`, height: `-webkit-fill-available` }}
+            />
           </Slider>
         );
       case "Bed-Entry":
