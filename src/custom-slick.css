@@ -1,12 +1,10 @@
 /* Container styling */
 .slick-list {
-  display: inline;
   height: auto;
   align-items: center;
 }
 
 .slick-track {
-  display: inline;
   height: auto;
   align-items: center;
 }
