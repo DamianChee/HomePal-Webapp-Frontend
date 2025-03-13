@@ -6,9 +6,3 @@
 .slick-track {
   height: -webkit-fill-available;
 }
-
-.slick-slide img {
-  display: inline;
-  height: -webkit-fill-available;
-  width: auto;
-}
