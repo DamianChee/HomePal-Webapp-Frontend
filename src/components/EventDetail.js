@@ -43,26 +43,11 @@ function EventDetail({ event, getStatusColor, onClose }) {
         );
       case "Bed-Entry":
         return (
-          <Slider {...settings}>
-            <div>
-              <h3>1</h3>
-            </div>
-            <div>
-              <h3>2</h3>
-            </div>
-            <div>
-              <h3>3</h3>
-            </div>
-            <div>
-              <h3>4</h3>
-            </div>
-            <div>
-              <h3>5</h3>
-            </div>
-            <div>
-              <h3>6</h3>
-            </div>
-          </Slider>
+          <img
+            src="/images/bed-entry.jpg"
+            alt="Static image from public folder"
+            style={{ height: `-webkit-fill-available` }}
+          />
         );
       case "Bed-Exit":
         return (
