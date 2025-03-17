@@ -15,7 +15,7 @@ import useFetch from "../hooks/useFetch";
 
 // Import component modules
 import HeaderSection from "./HeaderSection";
-import StatusSection from "./StatusSection";
+// import StatusSection from "./StatusSection";
 import QuickActionsSection from "./QuickActionsSection";
 import EventDetail from "./EventDetail";
 import EventTimeline from "./EventTimeline";
@@ -255,10 +255,10 @@ function MobileMonitorDashboard() {
       />
 
       {/* Status Section */}
-      <StatusSection
+      {/* <StatusSection
         monitoringPaused={monitoringPaused}
         timeRemaining={getTimeRemaining()}
-      />
+      /> */}
 
       {/* Quick Actions Section */}
       <QuickActionsSection
