@@ -39,6 +39,8 @@ export function getDateObject() {
 export const parseTime = (timeStr) => {
   if (!timeStr?.trim()) return null; // Return null for invalid inputs
 
+  console.log(timeStr);
+
   const [time, period] = timeStr.split(" ") || [];
   if (!time || !period) return null;
 
