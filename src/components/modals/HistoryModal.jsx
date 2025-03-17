@@ -10,6 +10,8 @@ function HistoryModal({
   historyDateFilter,
   currentPages,
   today,
+  events,
+  activeFilters,
 }) {
   return (
     <div className="fixed inset-0 bg-gray-900 z-50">
