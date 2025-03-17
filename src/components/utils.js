@@ -185,12 +185,11 @@ export const filterHistoryEvents = (
 };
 
 /**
- * Filter events for history view based on selected date filter
+ * This returns a formatted date for my own debugging purposes. I don't think
+ * it's used anywhere anymore. But feel free to use it if you want to.
+ * Currently not in use.
  *
- * @param {Array} events - Array of event objects
- * @param {string} historyDateFilter - The date filter ('Today', 'Past Week', 'All History')
- * @param {Array} activeFilters - Array of active filter strings
- * @returns {Array} Filtered and sorted events
+ * @returns {Template String} Time right now in `HH:MM:SS[AM/PM] DD/MM/YYYY`
  */
 
 export function formatDate() {
@@ -215,12 +214,13 @@ export function formatDate() {
 }
 
 /**
- * Filter events for history view based on selected date filter
+ * Gets a date object (I'll be honest Claude Code wrote this. I know what it
+ * does and I know I could probably just use the one liner
+ * const date = new Date();
+ * so I'll probably go hunt down usages of these at some point to replace it.)
+ * It's in use in mockData.js and MobileMonitorDashboard.js
  *
- * @param {Array} events - Array of event objects
- * @param {string} historyDateFilter - The date filter ('Today', 'Past Week', 'All History')
- * @param {Array} activeFilters - Array of active filter strings
- * @returns {Array} Filtered and sorted events
+ * @returns {Date} Date object of RIGHT NOW.
  */
 
 export function getDateObject() {
@@ -243,8 +243,9 @@ export function getDateObject() {
 /**
  * Parse Time takes in the time retrieved from Firebase Firestore to use for
  * sorting later on via sort((a, b) => parseTime(b.time) - parseTime(a.time));
+ * It's in use in EventTimeline.js
  *
- * @param {Array} timeStr - Array of event objects
+ * @param {String} timeStr - String of time e.g. "10:39:00 PM"
  * @returns {Template String} `day month year at hours:minutes:seconds UTC+8`
  */
 
@@ -273,6 +274,8 @@ export const parseTime = (timeStr) => {
 /**
  * Takes in a timestamp in default nanosecond and converts it to the format
  * saved in Firebase Firestore
+ * Currently not in use (Previously used when trying to create mock data from
+ * frontend to backend to Firebase Firestore)
  *
  * @param {Array} timestamp - Array of event objects
  * @returns {Template String} `day month year at hours:minutes:seconds UTC+8`
