@@ -317,6 +317,8 @@ function MobileMonitorDashboard() {
           historyDateFilter={historyDateFilter}
           currentPages={currentPages}
           today={today}
+          events={events}
+          activeFilters={activeFilters}
         />
       )}
 
