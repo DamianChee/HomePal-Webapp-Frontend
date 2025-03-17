@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // Import mock data
-import fetchEvents from "./EventData";
+import fetchEvents from "./Data";
 
 // Import utility functions
 import {
