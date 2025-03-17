@@ -50,7 +50,6 @@ const transformLiveEvents = (liveEvents) => {
 export const fetchEvents = async (fetchFn) => {
   try {
     const rawData = await fetchFn();
-    console.log(`Raw Data from fetch:`, rawData);
 
     // Validate response structure
     if (!Array.isArray(rawData)) {
