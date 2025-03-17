@@ -65,6 +65,20 @@ export const fetchEvents = async (fetchFn) => {
   }
 };
 
+/**
+ * From this part onwards it's all for mock data during early development and
+ * first iteration of testing the UI.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+const today = new Date();
+
 // Export mock events data
 export const mockEvents = [
   {
