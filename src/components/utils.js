@@ -218,7 +218,7 @@ export function formatDate() {
  * does and I know I could probably just use the one liner
  * const date = new Date();
  * so I'll probably go hunt down usages of these at some point to replace it.)
- * It's in use in mockData.js and MobileMonitorDashboard.js
+ * It's in use in MobileMonitorDashboard.js
  *
  * @returns {Date} Date object of RIGHT NOW.
  */
@@ -251,8 +251,6 @@ export function getDateObject() {
 
 export const parseTime = (timeStr) => {
   if (!timeStr?.trim()) return null; // Return null for invalid inputs
-
-  console.log(timeStr);
 
   const [time, period] = timeStr.split(" ") || [];
   if (!time || !period) return null;
