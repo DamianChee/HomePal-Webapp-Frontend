@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { X, ArrowLeft } from "lucide-react";
 
 // Import mock data
 import fetchEvents from "./EventData";
@@ -9,7 +8,6 @@ import {
   getStatusColor,
   calculateTimeRemaining,
   calculatePauseEndTime,
-  filterHistoryEvents,
 } from "./utils";
 
 import { getDateObject } from "./utils";
@@ -21,7 +19,14 @@ import StatusSection from "./StatusSection";
 import QuickActionsSection from "./QuickActionsSection";
 import EventDetail from "./EventDetail";
 import EventTimeline from "./EventTimeline";
+
+// Import modal component modules
 import RoomSettingsModal from "./modals/RoomSettingsModal";
+import HistoryModal from "./modals/HistoryModal";
+import AlertSettingsModal from "./modals/AlertSettingsModal";
+import FilterModal from "./modals/FilterModal";
+import ScheduleSettingsModal from "./modals/ScheduleSettingsModal";
+import PauseOptionsModal from "./modals/PauseOptionsModal";
 
 /**
  * MobileMonitorDashboard Component
@@ -40,9 +45,24 @@ import RoomSettingsModal from "./modals/RoomSettingsModal";
  */
 function MobileMonitorDashboard() {
   const fetchData = useFetch();
+
+  /**
+   * Grabs the recent Events stored on Firebase Firestore via our backend which
+   * will give you the events from the last 30 days. The endpoint being
+   * [hostedsite]/events/recent and a GET request. This should be the only one you
+   * need.
+   *
+   * 17/3/2025 Damian (Yoowa)
+   * I'm leaving this comment note here, I've yet to write in an endpoint that
+   * checks for specific devices and return only events for it but it will/should
+   * be in the works for the backend. Residentially, we will eventually want some
+   * form of authentication and then linking of devices so that we can ensure
+   * users only receive information from their own devices and the events from
+   * their own devices, also if they have more than one device, to display from
+   * all of them.
+   */
   const handleGetRecentEvents = async () => {
     try {
-      // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
       return res.data.response;
@@ -66,8 +86,8 @@ function MobileMonitorDashboard() {
   });
   const [events, setEvents] = useState([]);
 
+  // Setup objects for today's dates and comparisons later
   const dateObject = getDateObject();
-
   const today = `${dateObject.getDate()}/${
     dateObject.getMonth() + 1
   }/${dateObject.getFullYear()}`;
@@ -94,16 +114,15 @@ function MobileMonitorDashboard() {
   const [currentPages, setCurrentPages] = useState({
     Today: 1,
     Yesterday: 1,
-    PastWeek: 1,
-  }); // Separate pagination for each date
+  }); // Separate pagination for today and yesterday
+
+  // These are default magic numbers, I want to show 3 events at glance, then 5
+  // per pages
   const initialEventsToShow = 3;
   const expandedEventsToShow = 5;
 
   // History view state
   const [historyDateFilter, setHistoryDateFilter] = useState(today);
-
-  // Use imported mock events data
-  // const events = fetchEvents(handleGetRecentEvents);
 
   // For custom duration
   const [customDuration, setCustomDuration] = useState(1); // Default 1 day
@@ -123,7 +142,7 @@ function MobileMonitorDashboard() {
     setShowPauseOptions(false);
 
     // Log to console instead of updating state directly
-    console.log(`Monitoring paused for ${hours} hours`);
+    // console.log(`Monitoring paused for ${hours} hours`);
   };
 
   // Handle custom duration - converts days to hours
@@ -132,7 +151,7 @@ function MobileMonitorDashboard() {
     handlePauseMonitoring(customDuration * 24);
 
     // Log to console
-    console.log(`Monitoring paused for ${customDuration} days`);
+    // console.log(`Monitoring paused for ${customDuration} days`);
   };
 
   // Resume monitoring
@@ -142,7 +161,7 @@ function MobileMonitorDashboard() {
     setShowPauseOptions(false);
 
     // Log to console
-    console.log("Monitoring resumed");
+    // console.log("Monitoring resumed");
   };
 
   // Handle toggling date expansion
@@ -151,20 +170,20 @@ function MobileMonitorDashboard() {
       // If already expanded, collapse and reset page
       setExpandedDates(expandedDates.filter((d) => d !== date));
       setCurrentPages({ ...currentPages, [date]: 1 });
-      console.log(`Showing less events for ${date}`);
+      // console.log(`Showing less events for ${date}`);
     } else {
       // If not expanded, expand and ensure we're on page 1
       setExpandedDates([...expandedDates, date]);
       // Always reset to page 1 when expanding to ensure consistency
       setCurrentPages({ ...currentPages, [date]: 1 });
-      console.log(`Showing more events for ${date}. Current page: 1`);
+      // console.log(`Showing more events for ${date}. Current page: 1`);
     }
   };
 
   // Handle page change for a date
   const handlePageChange = (date, newPage) => {
     setCurrentPages({ ...currentPages, [date]: newPage });
-    console.log(`Moving to page ${newPage} for ${date}`);
+    // console.log(`Moving to page ${newPage} for ${date}`);
   };
 
   // Timer for pause countdown
@@ -191,7 +210,7 @@ function MobileMonitorDashboard() {
       }
 
       // Log to console
-      console.log("Settings loaded from localStorage");
+      // console.log("Settings loaded from localStorage");
     } catch (error) {
       console.error("Error loading settings:", error);
     }
@@ -221,7 +240,7 @@ function MobileMonitorDashboard() {
       );
 
       // Log to console
-      console.log("Settings saved to localStorage");
+      // console.log("Settings saved to localStorage");
     } catch (error) {
       console.error("Error saving settings:", error);
     }
@@ -289,605 +308,56 @@ function MobileMonitorDashboard() {
 
       {/* History Modal */}
       {showHistory && (
-        <div className="fixed inset-0 bg-gray-900 z-50">
-          <div className="flex flex-col h-full">
-            <div className="bg-gray-800 px-4 py-3 flex items-center space-x-3 border-b border-gray-700">
-              <button
-                onClick={() => setShowHistory(false)}
-                className="text-gray-400"
-                aria-label="Close history"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
-              <h3 className="text-white font-semibold">Event History</h3>
-            </div>
-
-            {/* Date Filter Tabs */}
-            <div className="bg-gray-800 px-4 py-2 border-b border-gray-700">
-              <div className="flex space-x-2">
-                <button
-                  className={`px-3 py-1 ${
-                    historyDateFilter === today
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-700 text-gray-300"
-                  } text-sm rounded-full`}
-                  onClick={() => {
-                    setHistoryDateFilter(today);
-                    // Reset pagination when changing filters
-                    setCurrentPages({ ...currentPages, Today: 1 });
-                    console.log("History filter set to today's date:", today);
-                  }}
-                >
-                  Today
-                </button>
-                <button
-                  className={`px-3 py-1 ${
-                    historyDateFilter === "Past Week"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-700 text-gray-300"
-                  } text-sm rounded-full`}
-                  onClick={() => {
-                    setHistoryDateFilter("Past Week");
-                    // Reset pagination when changing filters
-                    setCurrentPages({ ...currentPages, "Past Week": 1 });
-                    console.log("History filter set to: Past Week");
-                  }}
-                >
-                  Past Week
-                </button>
-                <button
-                  className={`px-3 py-1 ${
-                    historyDateFilter === "All History"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-700 text-gray-300"
-                  } text-sm rounded-full`}
-                  onClick={() => {
-                    setHistoryDateFilter("All History");
-                    // Reset pagination when changing filters
-                    setCurrentPages({ ...currentPages, "All History": 1 });
-                    console.log("History filter set to: All History");
-                  }}
-                >
-                  All History
-                </button>
-              </div>
-            </div>
-
-            {/* Events List */}
-            <div className="flex-1 overflow-auto">
-              {/* Get filtered events based on historyDateFilter */}
-              {(() => {
-                // Get filtered events using utility function
-                const filteredEvents = filterHistoryEvents(
-                  events,
-                  historyDateFilter,
-                  activeFilters
-                );
-
-                // Group events by date for display
-                const groupedEvents = {};
-
-                // Process event dates for display
-                filteredEvents.forEach((event) => {
-                  let displayDate = event.date;
-
-                  if (!groupedEvents[displayDate]) {
-                    groupedEvents[displayDate] = [];
-                  }
-
-                  groupedEvents[displayDate].push(event);
-                });
-
-                // If no events to display
-                if (Object.keys(groupedEvents).length === 0) {
-                  return (
-                    <div className="p-8 text-center text-gray-400">
-                      No events found for the selected filter.
-                    </div>
-                  );
-                }
-
-                // Render grouped events by date
-                return Object.entries(groupedEvents).map(
-                  ([date, dateEvents]) => (
-                    <div key={date}>
-                      <div className="px-4 py-2 bg-gray-800 text-sm text-white font-semibold sticky top-0 border-b border-gray-700">
-                        {date}
-                      </div>
-                      {dateEvents.map((event) => (
-                        <button
-                          key={event.id}
-                          className="w-full text-left flex items-start space-x-2 p-3 hover:bg-gray-800 border-b border-gray-700"
-                          onClick={() => {
-                            setSelectedEvent(event);
-                            setShowHistory(false);
-                            console.log("Selected event:", event);
-                          }}
-                        >
-                          <div
-                            className={`mt-0.5 h-3 w-3 rounded-full flex-shrink-0 ${getStatusColor(
-                              event.event
-                            )}`}
-                          />
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center">
-                              <div className="text-white text-sm font-medium">
-                                {event.event}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                {event.time}
-                              </div>
-                            </div>
-                            <div className="text-xs text-gray-400 mt-0.5">
-                              {event.description}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )
-                );
-              })()}
-
-              {/* Data Retention Notice */}
-              <div className="p-4 text-center text-xs text-gray-500">
-                Event data is retained for 30 days.
-                <br />
-                Older events are automatically removed.
-              </div>
-            </div>
-          </div>
-        </div>
+        <HistoryModal
+          getStatusColor={getStatusColor}
+          setShowHistory={setShowHistory}
+          setHistoryDateFilter={setHistoryDateFilter}
+          setCurrentPages={setCurrentPages}
+          setSelectedEvent={setSelectedEvent}
+          historyDateFilter={historyDateFilter}
+          currentPages={currentPages}
+          today={today}
+        />
       )}
 
       {/* Alert Settings Modal */}
       {showAlertSettings && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 w-full max-w-sm rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-semibold">Alert Settings</h3>
-              <button
-                onClick={() => setShowAlertSettings(false)}
-                className="text-gray-400"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="p-3 rounded-lg bg-gray-700">
-                <div className="text-white text-sm font-medium mb-3">
-                  Alert Types
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-3 w-3 bg-red-500 rounded-full"></div>
-                      <div>
-                        <div className="text-white text-sm font-medium text-left">
-                          Bed Exit Alerts
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          When person leaves the bed
-                        </div>
-                      </div>
-                    </div>
-                    <label className="relative inline-block w-12 h-6">
-                      <input
-                        type="checkbox"
-                        className="opacity-0 w-0 h-0"
-                        checked={alertSettings.bedExit}
-                        onChange={() => {
-                          setAlertSettings({
-                            ...alertSettings,
-                            bedExit: !alertSettings.bedExit,
-                          });
-
-                          // Log to console
-                          console.log(
-                            "Bed exit alerts:",
-                            !alertSettings.bedExit
-                          );
-                        }}
-                      />
-                      <span
-                        className={`absolute cursor-pointer inset-0 rounded-full transition-colors duration-200 ${
-                          alertSettings.bedExit ? "bg-blue-500" : "bg-gray-500"
-                        }`}
-                      >
-                        <span
-                          className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
-                            alertSettings.bedExit
-                              ? "translate-x-1"
-                              : "-translate-x-6"
-                          } top-0.5`}
-                        ></span>
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
-                      <div>
-                        <div className="text-white text-sm font-medium text-left">
-                          Edge Detection
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          When sitting on side of bed
-                        </div>
-                      </div>
-                    </div>
-                    <label className="relative inline-block w-12 h-6">
-                      <input
-                        type="checkbox"
-                        className="opacity-0 w-0 h-0"
-                        checked={alertSettings.edgeDetection}
-                        onChange={() => {
-                          setAlertSettings({
-                            ...alertSettings,
-                            edgeDetection: !alertSettings.edgeDetection,
-                          });
-
-                          // Log to console
-                          console.log(
-                            "Edge detection:",
-                            !alertSettings.edgeDetection
-                          );
-                        }}
-                      />
-                      <span
-                        className={`absolute cursor-pointer inset-0 rounded-full transition-colors duration-200 ${
-                          alertSettings.edgeDetection
-                            ? "bg-blue-500"
-                            : "bg-gray-500"
-                        }`}
-                      >
-                        <span
-                          className={`absolute h-5 w-5 rounded-full bg-white transform transition-transform duration-200 ${
-                            alertSettings.edgeDetection
-                              ? "translate-x-1"
-                              : "-translate-x-6"
-                          } top-0.5`}
-                        ></span>
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-gray-700">
-                <div className="text-white text-sm font-medium mb-3">
-                  Alert Notifications
-                </div>
-                <div className="text-xs text-gray-300">
-                  Alerts will be sent via SMS and WhatsApp to registered
-                  caregivers.
-                </div>
-
-                <div className="mt-3 text-xs text-gray-400">
-                  Primary contact: +65 9123 4567
-                </div>
-                <div className="mt-1 text-xs text-gray-400">
-                  Secondary contact: +65 9876 5432
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setShowAlertSettings(false);
-
-                  // Log to console
-                  console.log("Alert settings saved:", alertSettings);
-                }}
-                className="w-full bg-blue-500 text-white rounded-lg py-2 text-sm font-medium"
-              >
-                Save Settings
-              </button>
-            </div>
-          </div>
-        </div>
+        <AlertSettingsModal
+          setShowAlertSettings={setShowAlertSettings}
+          setAlertSettings={setAlertSettings}
+          alertSettings={alertSettings}
+        />
       )}
 
       {/* Filter Modal */}
       {showFilters && (
-        <div className="fixed inset-0 bg-black/80 flex items-end z-50">
-          <div className="bg-gray-800 w-full rounded-t-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-semibold">Filter Timeline</h3>
-              <button
-                onClick={() => setShowFilters(false)}
-                className="text-gray-400"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                className={`w-full p-3 text-left rounded-lg ${
-                  activeFilters.includes("all")
-                    ? "bg-blue-600 text-white font-medium"
-                    : "bg-gray-700 hover:bg-gray-600 text-white"
-                }`}
-                onClick={() => {
-                  setActiveFilters(["all"]);
-
-                  // Log to console
-                  console.log("Filter set to: all");
-                }}
-              >
-                All Events
-              </button>
-
-              <button
-                className={`w-full p-3 text-left rounded-lg ${
-                  activeFilters.includes("Bedside-Fall")
-                    ? "bg-blue-600"
-                    : "bg-gray-700 hover:bg-gray-600"
-                } flex items-center space-x-3`}
-                onClick={() => {
-                  if (activeFilters.includes("all")) {
-                    setActiveFilters(["Bedside-Fall"]);
-                  } else if (activeFilters.includes("Bedside-Fall")) {
-                    setActiveFilters(
-                      activeFilters.filter((f) => f !== "Bedside-Fall")
-                    );
-                  } else {
-                    setActiveFilters([...activeFilters, "Bedside-Fall"]);
-                  }
-
-                  // Log to console
-                  console.log("Filter updated: Bedside-Fall events");
-                }}
-              >
-                <div className="h-3 w-3 bg-red-500 rounded-full"></div>
-                <div>
-                  <div className="text-white text-sm font-medium">
-                    Bed Exits Only
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    Person left the bed
-                  </div>
-                </div>
-              </button>
-
-              <button
-                className={`w-full p-3 text-left rounded-lg ${
-                  activeFilters.includes("Attempted-Bed-Exit")
-                    ? "bg-blue-600"
-                    : "bg-gray-700 hover:bg-gray-600"
-                } flex items-center space-x-3`}
-                onClick={() => {
-                  if (activeFilters.includes("all")) {
-                    setActiveFilters(["Attempted-Bed-Exit"]);
-                  } else if (activeFilters.includes("Attempted-Bed-Exit")) {
-                    setActiveFilters(
-                      activeFilters.filter((f) => f !== "Attempted-Bed-Exit")
-                    );
-                  } else {
-                    setActiveFilters([...activeFilters, "Attempted-Bed-Exit"]);
-                  }
-
-                  // Log to console
-                  console.log("Filter updated: Attempted-Bed-Exit events");
-                }}
-              >
-                <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
-                <div>
-                  <div className="text-white text-sm font-medium">
-                    Edge Activity Only
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    Sitting on edge of bed
-                  </div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowFilters(false);
-
-                  // Log to console
-                  console.log("Filters applied:", activeFilters);
-                }}
-                className="w-full bg-blue-500 text-white rounded-lg py-2 text-sm font-medium mt-2"
-              >
-                Apply Filter
-              </button>
-            </div>
-          </div>
-        </div>
+        <FilterModal
+          setShowFilters={setShowFilters}
+          setActiveFilters={setActiveFilters}
+          activeFilters={activeFilters}
+        />
       )}
 
       {/* Schedule Settings Modal */}
       {showScheduleSettings && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
-          role="dialog"
-          aria-labelledby="schedule-settings-title"
-        >
-          <div className="bg-gray-800 w-full max-w-sm rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3
-                id="schedule-settings-title"
-                className="text-white font-semibold"
-              >
-                Night Monitoring Hours
-              </h3>
-              <button
-                onClick={() => setShowScheduleSettings(false)}
-                className="text-gray-400"
-                aria-label="Close dialog"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-300 block mb-2">
-                  Active Monitoring Period
-                </label>
-                <div className="flex space-x-2 items-center">
-                  <input
-                    type="time"
-                    value={defaultSchedule.start}
-                    onChange={(e) => {
-                      setDefaultSchedule({
-                        ...defaultSchedule,
-                        start: e.target.value,
-                      });
-
-                      // Log to console
-                      console.log("Start time updated:", e.target.value);
-                    }}
-                    className="flex-1 bg-gray-700 text-white rounded px-3 py-2"
-                    aria-label="Start time"
-                  />
-                  <span className="text-gray-400">to</span>
-                  <input
-                    type="time"
-                    value={defaultSchedule.end}
-                    onChange={(e) => {
-                      setDefaultSchedule({
-                        ...defaultSchedule,
-                        end: e.target.value,
-                      });
-
-                      // Log to console
-                      console.log("End time updated:", e.target.value);
-                    }}
-                    className="flex-1 bg-gray-700 text-white rounded px-3 py-2"
-                    aria-label="End time"
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setShowScheduleSettings(false);
-
-                  // Log to console
-                  console.log("Schedule settings saved:", defaultSchedule);
-                }}
-                className="w-full bg-blue-500 text-white rounded-lg py-2 text-sm font-medium"
-              >
-                Save Schedule
-              </button>
-            </div>
-          </div>
-        </div>
+        <ScheduleSettingsModal
+          setShowScheduleSettings={setShowScheduleSettings}
+          setDefaultSchedule={setDefaultSchedule}
+          defaultSchedule={defaultSchedule}
+        />
       )}
 
       {/* Pause Options Modal */}
       {showPauseOptions && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-end z-50"
-          role="dialog"
-          aria-labelledby="pause-options-title"
-        >
-          <div className="bg-gray-800 w-full rounded-t-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 id="pause-options-title" className="text-white font-semibold">
-                {monitoringPaused ? "Resume Monitoring" : "Pause Monitoring"}
-              </h3>
-              <button
-                onClick={() => setShowPauseOptions(false)}
-                className="text-gray-400"
-                aria-label="Close dialog"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {monitoringPaused && (
-                <button
-                  className="w-full p-3 text-left rounded-lg bg-green-600 hover:bg-green-700 text-white"
-                  onClick={handleResumeMonitoring}
-                >
-                  <div className="font-medium">Resume Monitoring Now</div>
-                  <div className="text-sm opacity-90 mt-1">
-                    Return to active monitoring
-                  </div>
-                </button>
-              )}
-
-              <button
-                className="w-full p-3 text-left rounded-lg bg-gray-700 hover:bg-gray-600"
-                onClick={() => handlePauseMonitoring(3)}
-              >
-                <div className="text-white text-sm font-medium">
-                  Short Pause
-                </div>
-                <div className="text-gray-400 text-xs mt-1">
-                  3 hours (changing sheets, bathroom break)
-                </div>
-              </button>
-
-              <button
-                className="w-full p-3 text-left rounded-lg bg-gray-700 hover:bg-gray-600"
-                onClick={() => handlePauseMonitoring(12)}
-              >
-                <div className="text-white text-sm font-medium">Day Trip</div>
-                <div className="text-gray-400 text-xs mt-1">
-                  12 hours (day outing, doctor visit)
-                </div>
-              </button>
-
-              <button
-                className="w-full p-3 text-left rounded-lg bg-gray-700 hover:bg-gray-600"
-                onClick={() => handlePauseMonitoring(72)}
-              >
-                <div className="text-white text-sm font-medium">
-                  Weekend Trip
-                </div>
-                <div className="text-gray-400 text-xs mt-1">
-                  3 days (weekend away)
-                </div>
-              </button>
-
-              <div className="p-3 rounded-lg bg-gray-700">
-                <div className="text-white text-sm font-medium mb-2">
-                  Custom Duration
-                </div>
-                <div className="flex mb-2">
-                  <select
-                    className="flex-1 bg-gray-600 rounded px-3 py-1 text-white text-sm"
-                    value={customDuration}
-                    onChange={(e) => {
-                      setCustomDuration(parseInt(e.target.value));
-
-                      // Log to console
-                      console.log(
-                        "Custom duration set to:",
-                        e.target.value,
-                        "days"
-                      );
-                    }}
-                  >
-                    <option value="1">1 day</option>
-                    <option value="2">2 days</option>
-                    <option value="3">3 days</option>
-                    <option value="4">4 days</option>
-                    <option value="5">5 days</option>
-                    <option value="6">6 days</option>
-                    <option value="7">1 week</option>
-                    <option value="14">2 weeks</option>
-                  </select>
-                </div>
-                <button
-                  className="w-full bg-blue-500 text-white px-3 py-1 rounded text-sm"
-                  onClick={handleCustomDuration}
-                >
-                  Set Custom Duration
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PauseOptionsModal
+          setShowPauseOptions={setShowPauseOptions}
+          setCustomDuration={setCustomDuration}
+          handleResumeMonitoring={handleResumeMonitoring}
+          handlePauseMonitoring={handlePauseMonitoring}
+          handleCustomDuration={handleCustomDuration}
+          customDuration={customDuration}
+          monitoringPaused={monitoringPaused}
+        />
       )}
     </div>
   );
