@@ -18,6 +18,12 @@ import MobileMonitorDashboard from "./components/MobileMonitorDashboard";
 function App() {
   const fetchData = useFetch();
 
+  /**
+   * Runs a status check to the backend. The endpoint being
+   * [hostedsite]/api/status and a GET request. This is purely for debugging
+   * purposes
+   */
+
   const handleGetAPIStatus = async () => {
     try {
       const res = await fetchData("/api/status", "GET");
@@ -27,6 +33,12 @@ function App() {
       console.error(`[handleGetAPIStatus] Error has occured:`, error.message);
     }
   };
+
+  /**
+   * Grabs all Events stored on Firebase Firestore via our backend. The endpoint
+   * being [hostedsite]/events and a GET request. You shouldn't really need ALL
+   * events since we only display data from the last 30 days.
+   */
 
   const handleGetAllEvents = async () => {
     try {
@@ -38,9 +50,15 @@ function App() {
     }
   };
 
+  /**
+   * Grabs the latest Events stored on Firebase Firestore via our backend which
+   * will give you the 40 most recent events. The endpoint being
+   * [hostedsite]/events/latest and a GET request. You shouldn't really need these
+   * 40 latest events since we should be displaying data from the last 30 days.
+   */
+
   const handleGetLatestEvents = async () => {
     try {
-      // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/latest`, "GET");
       if (!res.ok) throw new Error(res.data);
       console.log(res.data.response);
@@ -52,9 +70,24 @@ function App() {
     }
   };
 
+  /**
+   * Grabs the recent Events stored on Firebase Firestore via our backend which
+   * will give you the events from the last 30 days. The endpoint being
+   * [hostedsite]/events/recent and a GET request. This should be the only one you
+   * need.
+   *
+   * 17/3/2025 Damian (Yoowa)
+   * I'm leaving this comment note here, I've yet to write in an endpoint that
+   * checks for specific devices and return only events for it but it will/should
+   * be in the works for the backend. Residentially, we will eventually want some
+   * form of authentication and then linking of devices so that we can ensure
+   * users only receive information from their own devices and the events from
+   * their own devices, also if they have more than one device, to display from
+   * all of them.
+   */
+
   const handleGetRecentEvents = async () => {
     try {
-      // const res = await fetchData("/events", "GET");
       const res = await fetchData(`/events/recent`, "GET");
       if (!res.ok) throw new Error(res.data);
       console.log(res.data.response);
