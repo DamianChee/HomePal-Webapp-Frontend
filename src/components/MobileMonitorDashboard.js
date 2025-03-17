@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import { X, ArrowLeft } from "lucide-react";
 
 // Import mock data
-import fetchEvents from "./mockData";
+import fetchEvents from "./EventData";
 
 // Import utility functions
 import {
   getStatusColor,
   calculateTimeRemaining,
   calculatePauseEndTime,
-  filterEvents,
   filterHistoryEvents,
 } from "./utils";
 
-import { getDateObject } from "../utils/dateFormatter";
+import { getDateObject } from "./utils";
 import useFetch from "../hooks/useFetch";
 
 // Import component modules
